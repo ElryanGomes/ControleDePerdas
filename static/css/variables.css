@@ -1,0 +1,49 @@
+/* ============================================================
+   Controle de Perdas — Design tokens
+   ============================================================ */
+:root{
+  /* base palette */
+  --ink:            #14202E;   /* sidebar / dark surfaces */
+  --ink-2:          #1D2E42;   /* sidebar hover / active   */
+  --bg:             #F2F4F7;   /* app background           */
+  --surface:        #FFFFFF;   /* cards, tables, panels    */
+  --surface-alt:    #F8F9FB;   /* zebra rows, subtle panels*/
+  --border:         #E2E6EB;
+  --border-strong:  #CBD2DA;
+
+  --text:           #1B2430;
+  --text-muted:     #667085;
+  --text-faint:     #98A2B3;
+
+  /* brand / actions */
+  --accent:         #E4572E;
+  --accent-dark:    #C64620;
+  --accent-soft:    #FCE9E2;
+
+  --steel:          #2F6FA8;
+  --steel-dark:     #245A88;
+  --steel-soft:     #E7F0F8;
+
+  --success:        #2E7D4F;
+  --success-soft:   #E4F3EA;
+
+  /* status colors */
+  --vencido:        #B23A2E;
+  --vencido-soft:   #FBE7E4;
+  --avariado:       #C98A1B;
+  --avariado-soft:  #FBF0DA;
+
+  /* type */
+  --font-display:   'Oswald', sans-serif;
+  --font-body:      'Inter', sans-serif;
+  --font-mono:      'IBM Plex Mono', monospace;
+
+  /* geometry */
+  --radius-sm: 6px;
+  --radius:    9px;
+  --radius-lg: 14px;
+  --sidebar-w: 240px;
+  --shadow-sm: 0 1px 2px rgba(20,32,46,0.06);
+  --shadow-md: 0 4px 14px rgba(20,32,46,0.08);
+  --shadow-modal: 0 12px 40px rgba(10,16,24,0.28);
+}

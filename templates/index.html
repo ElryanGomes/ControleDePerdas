@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Controle de Perdas</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/static/css/variables.css">
+<link rel="stylesheet" href="/static/css/base.css">
+<link rel="stylesheet" href="/static/css/layout.css">
+<link rel="stylesheet" href="/static/css/components.css">
+<link rel="stylesheet" href="/static/css/pages.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <nav class="sidebar" aria-label="Navegação principal">
+    <div class="brand">
+      <div class="barcode-mark">
+        <span style="height:24px"></span><span style="height:15px"></span><span style="height:22px"></span>
+        <span style="height:11px"></span><span style="height:24px"></span><span style="height:17px"></span>
+        <span style="height:24px"></span>
+      </div>
+      <div>
+        <h1>Controle de Perdas</h1>
+        <div class="sub">vencidos &amp; avariados</div>
+      </div>
+    </div>
+
+    <div class="side-nav">
+      <button class="nav-item active" data-page="registrar"><span class="nav-icon">＋</span> Registrar</button>
+      <button class="nav-item" data-page="relatorio"><span class="nav-icon">≣</span> Relatório</button>
+      <button class="nav-item" data-page="rankings"><span class="nav-icon">▲</span> Rankings</button>
+      <button class="nav-item" data-page="catalogo"><span class="nav-icon">▤</span> Catálogo</button>
+    </div>
+
+    <div class="sidebar-footer">
+      <b>Banco de dados</b>
+      Os dados ficam salvos no servidor (SQLAlchemy), acessíveis de qualquer computador conectado a este sistema.
+    </div>
+  </nav>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main-area">
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">Registrar perda</h2>
+        <p class="page-sub" id="pageSubtitle">Lance um item vencido ou avariado no controle.</p>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ===================== PÁGINA: REGISTRAR ===================== -->
+      <section id="page-registrar" class="page active">
+        <div class="two-col">
+          <div>
+
+            <!-- ---------- leitura do produto (ação principal) ---------- -->
+            <div class="panel panel-primary" id="scanCard">
+              <h3 class="panel-title">Leitura do produto</h3>
+
+              <label class="field-label">Código de barras</label>
+              <div class="scan-row">
+                <input type="text" id="barcodeInput" class="mono-input" placeholder="Escaneie ou digite o código de barras" autofocus>
+                <button class="scan-btn" id="btnScan" title="Escanear código de barras">⎙</button>
+              </div>
+              <div id="scanStatusHint" class="lookup-hint">Aponte a câmera ou digite o código de barras do produto.</div>
+
+              <a href="#" class="link-inline" id="linkManualForn">Não tem código de barras? Selecionar fornecedor manualmente</a>
+            </div>
+
+            <!-- ---------- fornecedor (só aparece quando necessário) ---------- -->
+            <div class="panel" id="fornecedorCard" style="display:none;">
+              <h3 class="panel-title">Fornecedor</h3>
+
+              <div class="chip-row-label">Mais usados</div>
+              <div id="fornChipsFrequentes" class="chips"></div>
+
+              <div class="field">
+                <label class="field-label">Selecionar ou pesquisar fornecedor</label>
+                <input type="text" id="fornecedorInput" list="fornecedoresDatalist" placeholder="Digite para pesquisar ou escolha na lista…">
+                <datalist id="fornecedoresDatalist"></datalist>
+              </div>
+
+              <button type="button" class="btn btn-outline btn-sm" id="btnAddFornRegistrar">+ Adicionar fornecedor novo</button>
+            </div>
+
+            <!-- ---------- produto ---------- -->
+            <div class="panel disabled-block" id="produtoCard">
+              <h3 class="panel-title">Produto</h3>
+
+              <div class="forn-line" id="produtoFornLine" style="display:none;">
+                <span>Fornecedor: <b id="produtoFornNome"></b></span>
+                <button type="button" class="btn btn-ghost btn-sm" id="btnTrocarForn">trocar</button>
+              </div>
+
+              <div class="field">
+                <label class="field-label">Código do produto na distribuidora</label>
+                <input type="text" id="codigoProdutoInput" class="mono-input" placeholder="Ex: 32477">
+                <div class="field-hint">Este é o código que vai para o relatório enviado ao RH.</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label">Descrição</label>
+                <input type="text" id="descInput" placeholder="Ex: MACARRAO RICHESTER ESPAGUETE 400G">
+              </div>
+
+              <div class="field">
+                <label class="field-label">Preço de compra (R$)</label>
+                <input type="number" id="valorUnitInput" step="0.01" min="0" placeholder="0,00">
+              </div>
+
+              <div class="checkbox-row">
+                <input type="checkbox" id="salvarCatalogo" checked>
+                <label for="salvarCatalogo">Salvar / atualizar este produto no catálogo do fornecedor</label>
+              </div>
+            </div>
+
+            <div class="panel disabled-block" id="perdaCard">
+              <h3 class="panel-title">Detalhes da perda</h3>
+
+              <label class="field-label">Motivo</label>
+              <div class="toggle-group" style="margin-bottom:14px;">
+                <button type="button" class="toggle-btn" data-tipo="VENCIDO">Vencido</button>
+                <button type="button" class="toggle-btn" data-tipo="AVARIADO">Avariado</button>
+              </div>
+
+              <div style="display:flex; gap:14px;">
+                <div class="field" style="flex:1;">
+                  <label class="field-label">Quantidade</label>
+                  <input type="number" id="qtdInput" min="1" step="1" value="1">
+                </div>
+                <div class="field" style="flex:1;">
+                  <label class="field-label">Validade</label>
+                  <input type="date" id="validadeInput">
+                </div>
+              </div>
+              <div class="checkbox-row">
+                <input type="checkbox" id="ilegivelCheck">
+                <label for="ilegivelCheck">Data ilegível / não informada</label>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" id="btnSalvarPerda">Registrar perda</button>
+          </div>
+
+          <!-- ---------- resumo lateral ---------- -->
+          <div class="side-preview">
+            <h3>Resumo do lançamento</h3>
+            <div class="preview-row"><span class="k">Fornecedor</span><span class="v" id="prevFornecedor">—</span></div>
+            <div class="preview-row"><span class="k">Produto</span><span class="v" id="prevDescricao">—</span></div>
+            <div class="preview-row"><span class="k">Código</span><span class="v mono" id="prevCodigo">—</span></div>
+            <div class="preview-row"><span class="k">Motivo</span><span class="v" id="prevTipo">—</span></div>
+            <div class="preview-row"><span class="k">Quantidade</span><span class="v" id="prevQtd">—</span></div>
+            <div class="preview-row"><span class="k">Validade</span><span class="v" id="prevValidade">—</span></div>
+            <div class="total-display" style="margin-top:14px;">
+              <span class="lbl">Valor total</span>
+              <span class="val" id="totalPreview">R$ 0,00</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PÁGINA: RELATÓRIO ===================== -->
+      <section id="page-relatorio" class="page">
+        <div class="filters-bar">
+          <select id="filtroForn"><option value="">Todos os fornecedores</option></select>
+          <select id="filtroTipo">
+            <option value="">Vencido &amp; Avariado</option>
+            <option value="VENCIDO">Só vencidos</option>
+            <option value="AVARIADO">Só avariados</option>
+          </select>
+          <div style="flex:1;"></div>
+          <button class="btn btn-outline" id="btnExportCSV">Exportar planilha (CSV)</button>
+        </div>
+
+        <div id="relatorioEmpty" class="empty-state" style="display:none;">
+          <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
+          Nenhum registro ainda.<br>Vá até a página "Registrar" para lançar uma perda.
+        </div>
+
+        <div class="panel" id="relatorioTableWrap" style="padding:0;">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Distribuidora</th>
+                  <th>Descrição</th>
+                  <th>Motivo</th>
+                  <th class="num">Qtd.</th>
+                  <th>Código</th>
+                  <th>Validade</th>
+                  <th class="num">Val. Unit.</th>
+                  <th class="num">Val. Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="relatorioTbody"></tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="3">Totais</td>
+                  <td class="num" id="relTotQtd">0</td>
+                  <td colspan="2" id="relTotCount">0 registros</td>
+                  <td></td>
+                  <td class="num" id="relTotValor">R$ 0,00</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PÁGINA: RANKINGS ===================== -->
+      <section id="page-rankings" class="page">
+        <div id="rankEmpty" class="empty-state" style="display:none;">
+          <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
+          Ainda não há dados suficientes.<br>Registre algumas perdas para ver os rankings.
+        </div>
+
+        <div id="rankContent">
+          <div class="summary-grid">
+            <div class="summary-card VENCIDO">
+              <div class="lbl">Vencido</div>
+              <div class="val" id="sumVencidoValor">R$ 0,00</div>
+              <div class="sub" id="sumVencidoQtd">0 itens</div>
+            </div>
+            <div class="summary-card AVARIADO">
+              <div class="lbl">Avariado</div>
+              <div class="val" id="sumAvariadoValor">R$ 0,00</div>
+              <div class="sub" id="sumAvariadoQtd">0 itens</div>
+            </div>
+            <div class="summary-card GERAL">
+              <div class="lbl">Total geral</div>
+              <div class="val" id="sumGeralValor">R$ 0,00</div>
+              <div class="sub" id="sumGeralQtd">0 itens</div>
+            </div>
+          </div>
+
+          <div class="metric-toggle">
+            <button type="button" class="toggle-btn active" data-metric="valor">Por valor (R$)</button>
+            <button type="button" class="toggle-btn" data-metric="quantidade">Por quantidade</button>
+          </div>
+
+          <div class="section-block">
+            <h3 class="panel-title">Evolução — últimos 6 meses</h3>
+            <div class="chart-wrap"><canvas id="chartMensal"></canvas></div>
+          </div>
+
+          <div class="section-block">
+            <h3 class="panel-title">Fornecedores com mais perdas</h3>
+            <div class="rank-list" id="rankFornecedores"></div>
+          </div>
+
+          <div class="rank-columns">
+            <div>
+              <h3 class="panel-title"><span class="dot VENCIDO"></span>Produtos mais vencidos</h3>
+              <div class="rank-list" id="rankProdutosVencido"></div>
+            </div>
+            <div>
+              <h3 class="panel-title"><span class="dot AVARIADO"></span>Produtos mais avariados</h3>
+              <div class="rank-list" id="rankProdutosAvariado"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PÁGINA: CATÁLOGO ===================== -->
+      <section id="page-catalogo" class="page">
+        <div class="catalogo-toolbar">
+          <select id="catFiltroForn"><option value="">Todos os fornecedores</option></select>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline" id="btnNovoFornecedor">+ Novo fornecedor</button>
+            <button class="btn btn-primary" id="btnNovoProduto">+ Novo produto</button>
+          </div>
+        </div>
+
+        <div id="catalogoEmpty" class="empty-state" style="display:none;">
+          <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
+          Nenhum fornecedor ou produto cadastrado ainda.
+        </div>
+
+        <div class="panel" id="catalogoTableWrap" style="padding:0;">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Fornecedor</th>
+                  <th>Código produto</th>
+                  <th>Código de barras</th>
+                  <th>Descrição</th>
+                  <th class="num">Preço de compra</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="catalogoTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== MODAL: SCANNER ===================== -->
+<div id="scannerModal" class="modal-overlay">
+  <div class="modal-box">
+    <div id="reader"></div>
+    <div class="scan-hint">Aponte a câmera para o código de barras</div>
+    <button class="btn btn-outline btn-block" id="btnCancelScan">Cancelar</button>
+  </div>
+</div>
+
+<!-- ===================== MODAL: NOVO FORNECEDOR ===================== -->
+<div id="fornecedorModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Novo fornecedor</h3>
+    <div class="field">
+      <label class="field-label">Nome do fornecedor</label>
+      <input type="text" id="fornModalInput" placeholder="Ex: M DIAS BRANCO">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="btnCancelForn">Cancelar</button>
+      <button class="btn btn-primary" id="btnSaveForn">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: PRODUTO (novo / editar) ===================== -->
+<div id="produtoModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 id="prodModalTitle">Novo produto</h3>
+    <div class="field">
+      <label class="field-label">Fornecedor</label>
+      <select id="prodModalForn"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">Código do produto</label>
+      <input type="text" id="prodModalCodProd" class="mono-input">
+    </div>
+    <div class="field">
+      <label class="field-label">Código de barras</label>
+      <input type="text" id="prodModalCodBarra" class="mono-input">
+    </div>
+    <div class="field">
+      <label class="field-label">Descrição</label>
+      <input type="text" id="prodModalDesc">
+    </div>
+    <div class="field">
+      <label class="field-label">Preço de compra (R$)</label>
+      <input type="number" id="prodModalValor" step="0.01" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="btnDeleteProd" style="display:none;">Excluir</button>
+      <button class="btn btn-outline" id="btnCancelProd">Cancelar</button>
+      <button class="btn btn-primary" id="btnSaveProd">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+<script src="/static/js/utils.js"></script>
+<script src="/static/js/api.js"></script>
+<script src="/static/js/state.js"></script>
+<script src="/static/js/scanner.js"></script>
+<script src="/static/js/modals.js"></script>
+<script src="/static/js/page-registrar.js"></script>
+<script src="/static/js/page-relatorio.js"></script>
+<script src="/static/js/page-rankings.js"></script>
+<script src="/static/js/page-catalogo.js"></script>
+<script src="/static/js/app.js"></script>
+
+</body>
+</html>
