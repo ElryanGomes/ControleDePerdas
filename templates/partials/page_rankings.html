@@ -1,0 +1,53 @@
+<!-- ===================== PÁGINA: RANKINGS ===================== -->
+<section id="page-rankings" class="page">
+  <div id="rankEmpty" class="empty-state" style="display:none;">
+    <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
+    Ainda não há dados suficientes.<br>Registre algumas perdas para ver os rankings.
+  </div>
+
+  <div id="rankContent">
+    <div class="summary-grid">
+      <div class="summary-card VENCIDO">
+        <div class="lbl">Vencido</div>
+        <div class="val" id="sumVencidoValor">R$ 0,00</div>
+        <div class="sub" id="sumVencidoQtd">0 itens</div>
+      </div>
+      <div class="summary-card AVARIADO">
+        <div class="lbl">Avariado</div>
+        <div class="val" id="sumAvariadoValor">R$ 0,00</div>
+        <div class="sub" id="sumAvariadoQtd">0 itens</div>
+      </div>
+      <div class="summary-card GERAL">
+        <div class="lbl">Total geral</div>
+        <div class="val" id="sumGeralValor">R$ 0,00</div>
+        <div class="sub" id="sumGeralQtd">0 itens</div>
+      </div>
+    </div>
+
+    <div class="metric-toggle">
+      <button type="button" class="toggle-btn active" data-metric="valor">Por valor (R$)</button>
+      <button type="button" class="toggle-btn" data-metric="quantidade">Por quantidade</button>
+    </div>
+
+    <div class="section-block">
+      <h3 class="panel-title">Evolução — últimos 6 meses</h3>
+      <div class="chart-wrap"><canvas id="chartMensal"></canvas></div>
+    </div>
+
+    <div class="section-block">
+      <h3 class="panel-title">Fornecedores com mais perdas</h3>
+      <div class="rank-list" id="rankFornecedores"></div>
+    </div>
+
+    <div class="rank-columns">
+      <div>
+        <h3 class="panel-title"><span class="dot VENCIDO"></span>Produtos mais vencidos</h3>
+        <div class="rank-list" id="rankProdutosVencido"></div>
+      </div>
+      <div>
+        <h3 class="panel-title"><span class="dot AVARIADO"></span>Produtos mais avariados</h3>
+        <div class="rank-list" id="rankProdutosAvariado"></div>
+      </div>
+    </div>
+  </div>
+</section>

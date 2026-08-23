@@ -27,6 +27,9 @@
   --success:        #2E7D4F;
   --success-soft:   #E4F3EA;
 
+  --danger:         #B23A2E;
+  --danger-soft:    #FBE7E4;
+
   /* status colors */
   --vencido:        #B23A2E;
   --vencido-soft:   #FBE7E4;

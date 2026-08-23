@@ -1,0 +1,30 @@
+<!-- ===================== PÁGINA: RELATÓRIO ===================== -->
+<section id="page-relatorio" class="page">
+  <div class="filters-bar">
+    <div class="field w-280 mb-0">
+      <input type="text" id="filtroForn" list="filtroFornDatalist" placeholder="Todos os fornecedores — pesquisar…">
+      <datalist id="filtroFornDatalist"></datalist>
+    </div>
+    <select id="filtroTipo">
+      <option value="">Vencido &amp; Avariado</option>
+      <option value="VENCIDO">Só vencidos</option>
+      <option value="AVARIADO">Só avariados</option>
+    </select>
+    <div class="flex-1"></div>
+    <button class="btn btn-outline" id="btnExportCSV">Exportar planilha (CSV)</button>
+  </div>
+
+  <div id="relatorioEmpty" class="empty-state" style="display:none;">
+    <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
+    Nenhum registro ainda.<br>Vá até a página "Registrar" para lançar uma perda.
+  </div>
+
+  <div id="relatorioContent">
+    <div class="total-banner">
+      <span class="lbl">Valor total</span>
+      <span class="val" id="relTotValor">R$ 0,00</span>
+    </div>
+
+    <div id="relatorioGroups"></div>
+  </div>
+</section>

@@ -33,6 +33,7 @@ const Api = (function(){
 
     getPerdas: () => request('/perdas'),
     criarPerda: (perda) => request('/perdas', { method: 'POST', body: JSON.stringify(perda) }),
+    atualizarPerda: (id, perda) => request(`/perdas/${id}`, { method: 'PUT', body: JSON.stringify(perda) }),
     excluirPerda: (id) => request(`/perdas/${id}`, { method: 'DELETE' })
   };
 })();

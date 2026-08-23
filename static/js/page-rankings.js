@@ -90,7 +90,7 @@ const PageRankings = (function(){
     });
     const list = Object.keys(map).map(f => ({
       fornecedor: f, vencido: map[f].vencido, avariado: map[f].avariado, total: map[f].vencido + map[f].avariado
-    })).sort((a, b) => b.total - a.total);
+    })).sort((a, b) => b.total - a.total).slice(0, 5);
 
     const maxTotal = list.length ? list[0].total : 1;
     const wrap = $('rankFornecedores');

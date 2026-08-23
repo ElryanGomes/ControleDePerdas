@@ -1,0 +1,29 @@
+<!-- ===================== PÁGINA: GRÁFICOS ===================== -->
+<section id="page-graficos" class="page">
+  <div class="filters-bar">
+    <select id="graficoMetric">
+      <option value="vencidos_qtd">Quantidade de vencidos</option>
+      <option value="avariados_qtd">Quantidade de avariados</option>
+      <option value="fornecedores_perdas">Fornecedores com mais perdas</option>
+      <option value="vencidos_valor">Perda em valor — vencidos (R$)</option>
+      <option value="avariados_valor">Perda em valor — avariados (R$)</option>
+      <option value="comparacao_qtd">Comparação entre quantidades (vencido x avariado)</option>
+      <option value="comparacao_fornecedores">Comparação entre fornecedores</option>
+      <option value="comparacao_valor">Comparação entre vencidos e avariados (R$)</option>
+    </select>
+    <select id="graficoPeriodo">
+      <option value="3">Últimos 3 meses</option>
+      <option value="6" selected>Últimos 6 meses</option>
+      <option value="12">Últimos 12 meses</option>
+    </select>
+  </div>
+
+  <div id="graficoEmpty" class="empty-state" style="display:none;">
+    <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
+    Ainda não há dados suficientes.<br>Registre algumas perdas para ver os gráficos.
+  </div>
+
+  <div class="chart-wrap" id="graficoWrap" style="display:none;">
+    <canvas id="chartPrincipal"></canvas>
+  </div>
+</section>

@@ -8,6 +8,7 @@
     registrar: { title: 'Registrar perda', sub: 'Lance um item vencido ou avariado no controle.' },
     relatorio: { title: 'Relatório', sub: 'Todos os registros, prontos para exportar para o RH.' },
     rankings:  { title: 'Rankings', sub: 'Panorama das perdas por período, fornecedor e produto.' },
+    graficos:  { title: 'Gráficos', sub: 'Visualize as perdas em colunas, por período, tipo ou fornecedor.' },
     catalogo:  { title: 'Catálogo', sub: 'Fornecedores e produtos salvos para preencher mais rápido.' }
   };
 
@@ -22,6 +23,7 @@
     if(pageId === 'registrar') PageRegistrar.refresh();
     if(pageId === 'relatorio') PageRelatorio.refresh();
     if(pageId === 'rankings')  PageRankings.refresh();
+    if(pageId === 'graficos')  PageGraficos.refresh();
     if(pageId === 'catalogo')  PageCatalogo.refresh();
   }
 
@@ -29,6 +31,14 @@
     btn.addEventListener('click', () => goTo(btn.dataset.page));
   });
 
+  function setTopbarDate(){
+    const el = document.getElementById('topbarDate');
+    if(!el) return;
+    const hoje = new Date();
+    el.textContent = hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  }
+
+  setTopbarDate();
   goTo('registrar');
 
 })();

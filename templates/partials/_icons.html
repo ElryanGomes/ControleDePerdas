@@ -1,0 +1,33 @@
+{# ============================================================
+   Ícones — conjunto de SVGs em traço (estilo outline), 24x24,
+   usando currentColor para herdar a cor do elemento pai.
+   Importado como: {% import "partials/_icons.html" as icons %}
+   ============================================================ #}
+
+{% macro base(path) -%}
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{{ path|safe }}</svg>
+{%- endmacro %}
+
+{% macro icon_scan() -%}
+{{ base('<path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/>') }}
+{%- endmacro %}
+
+{% macro icon_list() -%}
+{{ base('<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>') }}
+{%- endmacro %}
+
+{% macro icon_bar_chart() -%}
+{{ base('<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>') }}
+{%- endmacro %}
+
+{% macro icon_pie_chart() -%}
+{{ base('<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>') }}
+{%- endmacro %}
+
+{% macro icon_grid() -%}
+{{ base('<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>') }}
+{%- endmacro %}
+
+{% macro icon_barcode() -%}
+{{ base('<line x1="3" y1="5" x2="3" y2="19"/><line x1="7" y1="5" x2="7" y2="19"/><line x1="11" y1="5" x2="11" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/><line x1="19" y1="5" x2="19" y2="19"/><line x1="21" y1="5" x2="21" y2="19"/>') }}
+{%- endmacro %}

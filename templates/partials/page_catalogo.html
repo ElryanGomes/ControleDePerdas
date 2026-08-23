@@ -1,0 +1,36 @@
+<!-- ===================== PÁGINA: CATÁLOGO ===================== -->
+<section id="page-catalogo" class="page">
+  <div class="catalogo-toolbar">
+    <div class="toolbar-row">
+      <select id="catFiltroForn"><option value="">Todos os fornecedores</option></select>
+      <input type="text" id="catBusca" class="w-280" placeholder="Pesquisar por descrição ou código de barras…">
+    </div>
+    <div class="toolbar-row">
+      <button class="btn btn-outline" id="btnNovoFornecedor">+ Novo fornecedor</button>
+      <button class="btn btn-primary" id="btnNovoProduto">+ Novo produto</button>
+    </div>
+  </div>
+
+  <div id="catalogoEmpty" class="empty-state" style="display:none;">
+    <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
+    Nenhum fornecedor ou produto cadastrado ainda.
+  </div>
+
+  <div class="panel pad-0" id="catalogoTableWrap">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fornecedor</th>
+            <th>Código produto</th>
+            <th>Código de barras</th>
+            <th>Descrição</th>
+            <th class="num">Preço de compra</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="catalogoTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>

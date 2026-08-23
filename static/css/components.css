@@ -86,11 +86,12 @@
 .btn-outline:hover{ border-color:var(--steel); }
 .btn-ghost{ background:transparent; border-color:transparent; color:var(--text-muted); }
 .btn-ghost:hover{ color:var(--text); }
-.btn-danger{ background:#fff; border-color:var(--avariado); color:var(--avariado); }
-.btn-danger:hover{ background:var(--avariado-soft); }
+.btn-danger{ background:#fff; border-color:var(--danger); color:var(--danger); }
+.btn-danger:hover{ background:var(--danger-soft); }
 .btn-block{ width:100%; padding:13px; font-size:13.5px; }
 .btn-sm{ padding:7px 12px; font-size:11px; }
 .btn:disabled{ opacity:.45; cursor:not-allowed; }
+.btn:active:not(:disabled){ transform:translateY(1px); }
 
 /* ---------- chips ---------- */
 .chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
@@ -131,9 +132,12 @@
 .scan-row input{ flex:1; }
 .scan-btn{
   flex:0 0 42px; background:var(--ink); color:#fff; border:none; border-radius:var(--radius-sm);
-  font-size:17px; cursor:pointer;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background .15s ease;
 }
+.scan-btn svg{ width:18px; height:18px; }
 .scan-btn:hover{ background:var(--ink-2); }
+.scan-btn:active{ transform:translateY(1px); }
 
 .lookup-hint{ font-size:11.5px; margin-top:7px; font-family:var(--font-mono); }
 .lookup-hint.found{ color:var(--success); }
@@ -167,11 +171,49 @@ table.data-table tfoot td.num{ font-family:var(--font-mono); font-size:14px; col
 .row-actions{ display:flex; gap:12px; }
 .row-actions span{ cursor:pointer; font-size:11.5px; text-decoration:underline; }
 .row-actions .act-edit{ color:var(--steel); }
-.row-actions .act-del{ color:var(--avariado); }
+.row-actions .act-del{ color:var(--danger); }
 
 /* ---------- filters bar ---------- */
 .filters-bar{ display:flex; gap:10px; margin-bottom:16px; align-items:center; }
 .filters-bar select{ width:auto; min-width:180px; }
+
+/* ---------- kebab (3 dots) menu ---------- */
+.kebab-btn{
+  background:none; border:none; font-size:17px; line-height:1; cursor:pointer;
+  color:var(--text-muted); padding:5px 9px; border-radius:var(--radius-sm);
+}
+.kebab-btn:hover{ background:var(--surface-alt); color:var(--text); }
+.kebab-menu{
+  display:none; position:fixed; background:#fff;
+  border:1px solid var(--border); border-radius:var(--radius-sm); box-shadow:var(--shadow-md);
+  min-width:130px; z-index:150; overflow:hidden;
+}
+.kebab-menu.open{ display:block; }
+.kebab-item{
+  display:block; width:100%; text-align:left; padding:10px 14px; background:none; border:none;
+  font-size:12.5px; cursor:pointer; color:var(--text); font-family:var(--font-body);
+}
+.kebab-item:hover{ background:var(--surface-alt); }
+.kebab-item.act-del{ color:var(--danger); }
+
+/* ---------- relatório: banner de total único ---------- */
+.total-banner{
+  display:flex; justify-content:space-between; align-items:center;
+  background:var(--ink); color:#fff; border-radius:var(--radius); padding:16px 20px; margin-bottom:20px;
+}
+.total-banner .lbl{ font-family:var(--font-display); font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:#8CA0B5; }
+.total-banner .val{ font-family:var(--font-mono); font-size:22px; font-weight:600; }
+
+/* ---------- relatório: card por fornecedor ---------- */
+.report-card{ padding:0; margin-bottom:18px; overflow:hidden; }
+.report-card-header{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px 20px; background:var(--surface-alt); border-bottom:1px solid var(--border);
+}
+.report-card-header h3{
+  font-family:var(--font-display); font-size:13px; letter-spacing:0.04em; text-transform:uppercase; color:var(--ink);
+}
+.report-card-header .subtotal{ font-family:var(--font-mono); font-size:14px; font-weight:600; color:var(--text); }
 
 /* ---------- summary cards ---------- */
 .summary-card{
@@ -214,14 +256,19 @@ table.data-table tfoot td.num{ font-family:var(--font-mono); font-size:14px; col
 
 /* ---------- modal ---------- */
 .modal-overlay{
-  position:fixed; inset:0; background:rgba(12,18,26,0.55); display:none;
-  align-items:center; justify-content:center; z-index:100; padding:20px;
+  position:fixed; inset:0; background:rgba(12,18,26,0.55);
+  display:flex; align-items:center; justify-content:center; z-index:100; padding:20px;
+  opacity:0; visibility:hidden; pointer-events:none;
+  transition:opacity .18s ease, visibility .18s ease;
 }
-.modal-overlay.open{ display:flex; }
+.modal-overlay.open{ opacity:1; visibility:visible; pointer-events:auto; }
 .modal-box{
   background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-modal);
   width:100%; max-width:460px; padding:26px 26px 22px; max-height:88vh; overflow-y:auto;
+  transform:translateY(10px) scale(.97);
+  transition:transform .18s ease;
 }
+.modal-overlay.open .modal-box{ transform:translateY(0) scale(1); }
 .modal-box h3{ font-family:var(--font-display); font-size:15px; letter-spacing:0.03em; text-transform:uppercase; color:var(--ink); margin-bottom:18px; }
 .modal-actions{ display:flex; gap:10px; margin-top:8px; }
 .modal-actions .btn{ flex:1; }

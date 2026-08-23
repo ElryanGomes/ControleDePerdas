@@ -191,6 +191,40 @@ def criar_perda():
     return jsonify(perda.to_dict())
 
 
+@app.route('/api/perdas/<int:perda_id>', methods=['PUT'])
+def atualizar_perda(perda_id):
+    perda = Perda.query.get_or_404(perda_id)
+    data = request.get_json(force=True) or {}
+
+    fornecedor = (data.get('fornecedor') or '').strip()
+    descricao = (data.get('descricao') or '').strip()
+    tipo = (data.get('tipo') or '').strip().upper()
+    validade = (data.get('validade') or '').strip()
+
+    try:
+        quantidade = int(data.get('quantidade') or 0)
+        valor_unit = float(data.get('valorUnit') or 0)
+    except (TypeError, ValueError):
+        return jsonify({'erro': 'Quantidade ou valor inválido.'}), 400
+
+    if not fornecedor or not descricao or tipo not in ('VENCIDO', 'AVARIADO') or quantidade < 1 or not validade:
+        return jsonify({'erro': 'Preencha todos os campos obrigatórios.'}), 400
+
+    get_or_create_fornecedor(fornecedor)
+
+    perda.fornecedor = fornecedor
+    perda.descricao = descricao
+    perda.codigo = (data.get('codigo') or '').strip()
+    perda.tipo = tipo
+    perda.quantidade = quantidade
+    perda.validade = validade
+    perda.valor_unit = valor_unit
+    perda.valor_total = round(quantidade * valor_unit, 2)
+
+    db.session.commit()
+    return jsonify(perda.to_dict())
+
+
 @app.route('/api/perdas/<int:perda_id>', methods=['DELETE'])
 def excluir_perda(perda_id):
     perda = Perda.query.get_or_404(perda_id)

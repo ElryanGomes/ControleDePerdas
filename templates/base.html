@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Controle de Perdas — registro de produtos vencidos e avariados.">
+<title>{% block title %}Controle de Perdas{% endblock %}</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
+{% block head_extra %}{% endblock %}
+</head>
+<body>
+
+<div class="app-shell">
+
+  {% include "partials/nav.html" %}
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main-area">
+    <header class="topbar">
+      <div>
+        <h2 id="pageTitle">Registrar perda</h2>
+        <p class="page-sub" id="pageSubtitle">Lance um item vencido ou avariado no controle.</p>
+      </div>
+      <div class="topbar-date" id="topbarDate"></div>
+    </header>
+
+    <main class="content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+{% block modals %}{% endblock %}
+
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

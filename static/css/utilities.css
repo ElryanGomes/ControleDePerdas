@@ -1,0 +1,14 @@
+/* ============================================================
+   Utilities — pequenas classes reutilizáveis para evitar
+   estilos inline espalhados pelos templates.
+   ============================================================ */
+.flex-1{ flex:1; }
+.field-row{ display:flex; gap:14px; }
+.field-row > .field{ flex:1; }
+.toolbar-row{ display:flex; gap:10px; align-items:center; }
+
+.w-280{ width:280px; }
+.mb-0{ margin-bottom:0; }
+.mb-14{ margin-bottom:14px; }
+.mt-14{ margin-top:14px; }
+.pad-0{ padding:0; }

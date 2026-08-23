@@ -27,8 +27,14 @@ const PageCatalogo = (function(){
 
   function render(){
     fillFiltro();
-    const filtro = $('catFiltroForn').value;
-    const rows = allRows().filter(r => !filtro || r.fornecedor === filtro);
+    const filtroForn = $('catFiltroForn').value;
+    const termo = $('catBusca').value.trim().toLowerCase();
+    const rows = allRows().filter(r =>
+      (!filtroForn || r.fornecedor === filtroForn) &&
+      (!termo ||
+        (r.descricao || '').toLowerCase().includes(termo) ||
+        (r.codigoBarra || '').toLowerCase().includes(termo))
+    );
     const tbody = $('catalogoTbody');
     const empty = $('catalogoEmpty');
     const tableWrap = $('catalogoTableWrap');
@@ -42,6 +48,10 @@ const PageCatalogo = (function(){
     tableWrap.style.display = 'block';
 
     tbody.innerHTML = '';
+    if(rows.length === 0){
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:24px;">Nenhum produto encontrado.</td></tr>';
+      return;
+    }
     rows.forEach(r => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -174,6 +184,7 @@ const PageCatalogo = (function(){
 
   function bind(){
     $('catFiltroForn').addEventListener('change', render);
+    $('catBusca').addEventListener('input', render);
     bindFornModal();
     bindProdutoModal();
   }

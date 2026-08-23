@@ -1,0 +1,112 @@
+<!-- ===================== MODAL: SCANNER ===================== -->
+<div id="scannerModal" class="modal-overlay">
+  <div class="modal-box">
+    <div id="reader"></div>
+    <div class="scan-hint">Aponte a câmera para o código de barras</div>
+    <button class="btn btn-outline btn-block" id="btnCancelScan">Cancelar</button>
+  </div>
+</div>
+
+<!-- ===================== MODAL: NOVO FORNECEDOR ===================== -->
+<div id="fornecedorModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Novo fornecedor</h3>
+    <div class="field">
+      <label class="field-label">Nome do fornecedor</label>
+      <input type="text" id="fornModalInput" placeholder="Ex: M DIAS BRANCO">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="btnCancelForn">Cancelar</button>
+      <button class="btn btn-primary" id="btnSaveForn">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: PRODUTO (novo / editar) ===================== -->
+<div id="produtoModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 id="prodModalTitle">Novo produto</h3>
+    <div class="field">
+      <label class="field-label">Fornecedor</label>
+      <select id="prodModalForn"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">Código do produto</label>
+      <input type="text" id="prodModalCodProd" class="mono-input">
+    </div>
+    <div class="field">
+      <label class="field-label">Código de barras</label>
+      <input type="text" id="prodModalCodBarra" class="mono-input">
+    </div>
+    <div class="field">
+      <label class="field-label">Descrição</label>
+      <input type="text" id="prodModalDesc">
+    </div>
+    <div class="field">
+      <label class="field-label">Preço de compra (R$)</label>
+      <input type="number" id="prodModalValor" step="0.01" min="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="btnDeleteProd" style="display:none;">Excluir</button>
+      <button class="btn btn-outline" id="btnCancelProd">Cancelar</button>
+      <button class="btn btn-primary" id="btnSaveProd">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: EDITAR REGISTRO DE PERDA ===================== -->
+<div id="perdaModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Editar registro</h3>
+
+    <div class="field">
+      <label class="field-label">Fornecedor</label>
+      <input type="text" id="perdaModalForn" list="perdaModalFornDatalist" placeholder="Digite ou selecione o fornecedor…">
+      <datalist id="perdaModalFornDatalist"></datalist>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Descrição</label>
+      <input type="text" id="perdaModalDesc">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Código do produto</label>
+      <input type="text" id="perdaModalCodigo" class="mono-input">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Motivo</label>
+      <div class="toggle-group">
+        <button type="button" class="toggle-btn" data-tipo="VENCIDO">Vencido</button>
+        <button type="button" class="toggle-btn" data-tipo="AVARIADO">Avariado</button>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label">Quantidade</label>
+        <input type="number" id="perdaModalQtd" min="1" step="1">
+      </div>
+      <div class="field">
+        <label class="field-label">Validade</label>
+        <input type="text" id="perdaModalValidade" placeholder="DD/MM/AAAA ou ILEGÍVEL">
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Preço de compra (R$)</label>
+      <input type="number" id="perdaModalValor" step="0.01" min="0">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="btnCancelPerda">Cancelar</button>
+      <button class="btn btn-primary" id="btnSavePerda">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="kebabMenu" class="kebab-menu">
+  <button class="kebab-item" id="kebabEdit">Editar</button>
+  <button class="kebab-item act-del" id="kebabDelete">Apagar</button>
+</div>

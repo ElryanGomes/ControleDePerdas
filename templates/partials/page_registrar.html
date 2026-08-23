@@ -1,0 +1,111 @@
+{% import "partials/_icons.html" as icons %}
+<!-- ===================== PÁGINA: REGISTRAR ===================== -->
+<section id="page-registrar" class="page active">
+  <div class="two-col">
+    <div>
+
+      <!-- ---------- leitura do produto (ação principal) ---------- -->
+      <div class="panel panel-primary" id="scanCard">
+        <h3 class="panel-title">Leitura do produto</h3>
+
+        <label class="field-label">Código de barras</label>
+        <div class="scan-row">
+          <input type="text" id="barcodeInput" class="mono-input" placeholder="Escaneie ou digite o código de barras" autofocus>
+          <button class="scan-btn" id="btnScan" title="Escanear código de barras">{{ icons.icon_barcode() }}</button>
+        </div>
+        <div id="scanStatusHint" class="lookup-hint">Aponte a câmera ou digite o código de barras do produto.</div>
+
+        <a href="#" class="link-inline" id="linkManualForn">Não tem código de barras? Selecionar fornecedor manualmente</a>
+      </div>
+
+      <!-- ---------- fornecedor (só aparece quando necessário) ---------- -->
+      <div class="panel" id="fornecedorCard" style="display:none;">
+        <h3 class="panel-title">Fornecedor</h3>
+
+        <div class="chip-row-label">Mais usados</div>
+        <div id="fornChipsFrequentes" class="chips"></div>
+
+        <div class="field">
+          <label class="field-label">Selecionar ou pesquisar fornecedor</label>
+          <input type="text" id="fornecedorInput" list="fornecedoresDatalist" placeholder="Digite para pesquisar ou escolha na lista…">
+          <datalist id="fornecedoresDatalist"></datalist>
+        </div>
+
+        <button type="button" class="btn btn-outline btn-sm" id="btnAddFornRegistrar">+ Adicionar fornecedor novo</button>
+      </div>
+
+      <!-- ---------- produto ---------- -->
+      <div class="panel disabled-block" id="produtoCard">
+        <h3 class="panel-title">Produto</h3>
+
+        <div class="forn-line" id="produtoFornLine" style="display:none;">
+          <span>Fornecedor: <b id="produtoFornNome"></b></span>
+          <button type="button" class="btn btn-ghost btn-sm" id="btnTrocarForn">trocar</button>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Código do produto na distribuidora</label>
+          <input type="text" id="codigoProdutoInput" class="mono-input" placeholder="Ex: 32477">
+          <div class="field-hint">Este é o código que vai para o relatório enviado ao RH.</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Descrição</label>
+          <input type="text" id="descInput" placeholder="Ex: MACARRAO RICHESTER ESPAGUETE 400G">
+        </div>
+
+        <div class="field">
+          <label class="field-label">Preço de compra (R$)</label>
+          <input type="number" id="valorUnitInput" step="0.01" min="0" placeholder="0,00">
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="salvarCatalogo" checked>
+          <label for="salvarCatalogo">Salvar / atualizar este produto no catálogo do fornecedor</label>
+        </div>
+      </div>
+
+      <div class="panel disabled-block" id="perdaCard">
+        <h3 class="panel-title">Detalhes da perda</h3>
+
+        <label class="field-label">Motivo</label>
+        <div class="toggle-group mb-14">
+          <button type="button" class="toggle-btn" data-tipo="VENCIDO">Vencido</button>
+          <button type="button" class="toggle-btn" data-tipo="AVARIADO">Avariado</button>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">Quantidade</label>
+            <input type="number" id="qtdInput" min="1" step="1" value="1">
+          </div>
+          <div class="field">
+            <label class="field-label">Validade</label>
+            <input type="date" id="validadeInput">
+          </div>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="ilegivelCheck">
+          <label for="ilegivelCheck">Data ilegível / não informada</label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btnSalvarPerda">Registrar perda</button>
+    </div>
+
+    <!-- ---------- resumo lateral ---------- -->
+    <div class="side-preview">
+      <h3>Resumo do lançamento</h3>
+      <div class="preview-row"><span class="k">Fornecedor</span><span class="v" id="prevFornecedor">—</span></div>
+      <div class="preview-row"><span class="k">Produto</span><span class="v" id="prevDescricao">—</span></div>
+      <div class="preview-row"><span class="k">Código</span><span class="v mono" id="prevCodigo">—</span></div>
+      <div class="preview-row"><span class="k">Motivo</span><span class="v" id="prevTipo">—</span></div>
+      <div class="preview-row"><span class="k">Quantidade</span><span class="v" id="prevQtd">—</span></div>
+      <div class="preview-row"><span class="k">Validade</span><span class="v" id="prevValidade">—</span></div>
+      <div class="total-display mt-14">
+        <span class="lbl">Valor total</span>
+        <span class="val" id="totalPreview">R$ 0,00</span>
+      </div>
+    </div>
+  </div>
+</section>
