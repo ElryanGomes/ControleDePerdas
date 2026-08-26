@@ -105,6 +105,8 @@ const PageRegistrar = (function(){
     }
 
     if(achado){
+      Scanner.feedbackSucesso();
+
       State.fornecedorAtual = fornecedorAchado;
       $('fornecedorInput').value = fornecedorAchado;
       $('codigoProdutoInput').value = achado.codigoProduto || '';
@@ -175,7 +177,7 @@ const PageRegistrar = (function(){
   }
 
   async function salvarPerda(){
-    if(!State.fornecedorAtual){ Utils.toast('Selecione um fornecedor.'); return; }
+    if(!State.fornecedorAtual){ Utils.toast('Selecione um fornecedor.', 'error'); return; }
     const barcode = $('barcodeInput').value.trim();
     const codigoProduto = $('codigoProdutoInput').value.trim();
     const descricao = $('descInput').value.trim();
@@ -184,11 +186,11 @@ const PageRegistrar = (function(){
     const ilegivel = $('ilegivelCheck').checked;
     const validade = ilegivel ? 'ILEGÍVEL' : ($('validadeInput').value || '');
 
-    if(!descricao){ Utils.toast('Informe a descrição do produto.'); return; }
-    if(!tipoAtual){ Utils.toast('Selecione Vencido ou Avariado.'); return; }
-    if(!qtd || qtd < 1){ Utils.toast('Informe a quantidade.'); return; }
-    if(isNaN(valorUnit) || valorUnit < 0){ Utils.toast('Informe o preço de compra.'); return; }
-    if(!validade){ Utils.toast("Informe a validade ou marque 'ilegível'."); return; }
+    if(!descricao){ Utils.toast('Informe a descrição do produto.', 'error'); return; }
+    if(!tipoAtual){ Utils.toast('Selecione Vencido ou Avariado.', 'error'); return; }
+    if(!qtd || qtd < 1){ Utils.toast('Informe a quantidade.', 'error'); return; }
+    if(isNaN(valorUnit) || valorUnit < 0){ Utils.toast('Informe o preço de compra.', 'error'); return; }
+    if(!validade){ Utils.toast("Informe a validade ou marque 'ilegível'.", 'error'); return; }
 
     const btn = $('btnSalvarPerda');
     btn.disabled = true;
@@ -205,10 +207,10 @@ const PageRegistrar = (function(){
       });
       await State.reloadAll();
 
-      Utils.toast('Perda registrada ✓');
+      Utils.toast('Perda registrada com sucesso!', 'success');
       resetForm();
     }catch(e){
-      Utils.toast(e.message || 'Erro ao registrar a perda.');
+      Utils.toast(e.message || 'Erro ao registrar a perda.', 'error');
     }finally{
       btn.disabled = false;
     }

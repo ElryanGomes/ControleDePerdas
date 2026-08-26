@@ -50,3 +50,48 @@
   --shadow-md: 0 4px 14px rgba(20,32,46,0.08);
   --shadow-modal: 0 12px 40px rgba(10,16,24,0.28);
 }
+
+/* ============================================================
+   Tema escuro — mesmas variáveis, valores diferentes.
+   Ativado via [data-theme="dark"] no <html> (ver theme.js).
+   Como o restante do CSS todo usa var(--x), a troca de tema
+   não exige nenhuma outra alteração de estilo.
+   ============================================================ */
+[data-theme="dark"]{
+  --ink:            #0A1017;
+  --ink-2:          #16212F;
+  --bg:             #10161F;
+  --surface:        #1A222D;
+  --surface-alt:    #212B37;
+  --border:         #2B3644;
+  --border-strong:  #3C4859;
+
+  --text:           #E7EAEE;
+  --text-muted:     #9AA5B1;
+  --text-faint:     #6B7684;
+
+  --accent:         #FF7A50;
+  --accent-dark:    #E4572E;
+  --accent-soft:    #38251F;
+
+  --steel:          #6AA9DE;
+  --steel-dark:     #8CBEE8;
+  --steel-soft:     #1B2A38;
+
+  --success:        #4FBE84;
+  --success-soft:   #16281F;
+
+  --danger:         #E37568;
+  --danger-soft:    #33201D;
+
+  --vencido:        #E37568;
+  --vencido-soft:   #33201D;
+  --avariado:       #DCAE4C;
+  --avariado-soft:  #33280F;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.35);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.45);
+  --shadow-modal: 0 14px 44px rgba(0,0,0,0.6);
+}
+
+[data-theme="dark"] body{ color-scheme: dark; }

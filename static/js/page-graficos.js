@@ -139,17 +139,18 @@ const PageGraficos = (function(){
           legend: {
             display: data.datasets.length > 1,
             position: 'bottom',
-            labels: { font: { family: "'Oswald',sans-serif", size: 11.5 }, boxWidth: 12 }
+            labels: { color: cssVar('--text-muted'), font: { family: "'Oswald',sans-serif", size: 11.5 }, boxWidth: 12 }
           }
         },
         scales: {
           x: {
             grid: { display: false },
-            ticks: { font: { family: "'IBM Plex Mono',monospace", size: 10.5 }, maxRotation: 40, minRotation: 0 }
+            ticks: { color: cssVar('--text-muted'), font: { family: "'IBM Plex Mono',monospace", size: 10.5 }, maxRotation: 40, minRotation: 0 }
           },
           y: {
-            grid: { color: '#EEF1F4' },
+            grid: { color: cssVar('--border') },
             ticks: {
+              color: cssVar('--text-muted'),
               font: { family: "'IBM Plex Mono',monospace", size: 10.5 },
               callback: (v) => isMoney ? 'R$' + v : v
             }
@@ -165,5 +166,10 @@ const PageGraficos = (function(){
   }
 
   bind();
+
+  window.addEventListener('themechange', () => {
+    if(document.getElementById('page-graficos')?.classList.contains('active')) render();
+  });
+
   return { refresh: render };
 })();

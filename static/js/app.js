@@ -18,6 +18,10 @@
     document.getElementById('pageTitle').textContent = PAGE_META[pageId].title;
     document.getElementById('pageSubtitle').textContent = PAGE_META[pageId].sub;
 
+    // esqueleto de carregamento imediato, enquanto aguarda o backend responder
+    if(pageId === 'relatorio') PageRelatorio.showSkeleton();
+    if(pageId === 'catalogo')  PageCatalogo.showSkeleton();
+
     await State.reloadAll();
 
     if(pageId === 'registrar') PageRegistrar.refresh();

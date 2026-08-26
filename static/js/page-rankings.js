@@ -7,6 +7,7 @@ const PageRankings = (function(){
   let chartMensal = null;
 
   function metricVal(p){ return rankMetric === 'valor' ? p.valorTotal : p.quantidade; }
+  function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
   function fmtMetric(n){ return rankMetric === 'valor' ? Utils.fmtBRL(n) : (n + ' un'); }
 
   function render(){
@@ -61,18 +62,19 @@ const PageRankings = (function(){
       data: {
         labels: meses.map(m => m.label),
         datasets: [
-          { label: 'Vencido', data: vencidoData, backgroundColor: '#B23A2E', borderRadius: 4, maxBarThickness: 34 },
-          { label: 'Avariado', data: avariadoData, backgroundColor: '#C98A1B', borderRadius: 4, maxBarThickness: 34 }
+          { label: 'Vencido', data: vencidoData, backgroundColor: cssVar('--vencido'), borderRadius: 4, maxBarThickness: 34 },
+          { label: 'Avariado', data: avariadoData, backgroundColor: cssVar('--avariado'), borderRadius: 4, maxBarThickness: 34 }
         ]
       },
       options: {
         responsive: true,
-        plugins: { legend: { position: 'bottom', labels: { font: { family: "'Oswald',sans-serif", size: 11.5 }, boxWidth: 12 } } },
+        plugins: { legend: { position: 'bottom', labels: { color: cssVar('--text-muted'), font: { family: "'Oswald',sans-serif", size: 11.5 }, boxWidth: 12 } } },
         scales: {
-          x: { grid: { display: false }, ticks: { font: { family: "'IBM Plex Mono',monospace", size: 11 } } },
+          x: { grid: { display: false }, ticks: { color: cssVar('--text-muted'), font: { family: "'IBM Plex Mono',monospace", size: 11 } } },
           y: {
-            grid: { color: '#EEF1F4' },
+            grid: { color: cssVar('--border') },
             ticks: {
+              color: cssVar('--text-muted'),
               font: { family: "'IBM Plex Mono',monospace", size: 10.5 },
               callback: (v) => rankMetric === 'valor' ? 'R$' + v : v
             }
@@ -165,5 +167,10 @@ const PageRankings = (function(){
   }
 
   bind();
+
+  window.addEventListener('themechange', () => {
+    if(document.getElementById('page-rankings')?.classList.contains('active')) render();
+  });
+
   return { refresh: render };
 })();

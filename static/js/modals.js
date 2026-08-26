@@ -23,15 +23,15 @@ const FornecedorModal = (function(){
 
     $('btnSaveForn').addEventListener('click', async () => {
       const nome = $('fornModalInput').value.trim();
-      if(!nome){ Utils.toast('Digite o nome do fornecedor.'); return; }
+      if(!nome){ Utils.toast('Digite o nome do fornecedor.', 'error'); return; }
       try{
         await Api.criarFornecedor(nome);
         await State.reloadCatalogo();
         close();
-        Utils.toast('Fornecedor adicionado.');
+        Utils.toast('Fornecedor adicionado.', 'success');
         if(onSaved) onSaved(nome);
       }catch(e){
-        Utils.toast(e.message || 'Erro ao adicionar fornecedor.');
+        Utils.toast(e.message || 'Erro ao adicionar fornecedor.', 'error');
       }
     });
   }

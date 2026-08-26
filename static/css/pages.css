@@ -28,3 +28,34 @@
 /* ---------- Catálogo ---------- */
 #page-catalogo .catalogo-toolbar{ display:flex; justify-content:space-between; align-items:center; gap:14px; margin-bottom:18px; }
 #page-catalogo .catalogo-toolbar select{ width:auto; min-width:220px; }
+
+/* ============================================================
+   Áreas de toque ampliadas
+   Aplica-se em dispositivos com ponteiro "grosso" (touch/coletores
+   de dados) e em telas estreitas, garantindo alvos de toque
+   confortáveis (padrão de ~44-48px) nos controles mais usados
+   no dia a dia — como os botões Vencido/Avariado.
+   ============================================================ */
+@media (pointer: coarse), (max-width: 900px){
+  .toggle-btn{ padding:16px 10px; font-size:14px; min-height:50px; }
+  .nav-item{ padding:15px 12px; min-height:50px; }
+  .btn{ padding:13px 20px; min-height:46px; font-size:13.5px; }
+  .btn-sm{ padding:11px 16px; min-height:42px; }
+  .btn-block{ min-height:52px; }
+  .chip{ padding:10px 16px; font-size:13px; min-height:40px; display:inline-flex; align-items:center; }
+  .kebab-btn{ padding:11px 15px; font-size:20px; }
+  .scan-btn{ flex-basis:54px; }
+  .checkbox-row{ gap:10px; }
+  .checkbox-row input[type=checkbox]{ width:20px; height:20px; }
+  .theme-toggle{ width:42px; height:42px; flex-basis:42px; }
+
+  input[type=text],
+  input[type=number],
+  input[type=date],
+  select,
+  textarea{
+    padding:13px 14px;
+    font-size:16px; /* evita zoom automático em iOS ao focar o campo */
+    min-height:46px;
+  }
+}

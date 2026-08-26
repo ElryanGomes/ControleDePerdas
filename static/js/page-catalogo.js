@@ -78,9 +78,9 @@ const PageCatalogo = (function(){
           await Api.excluirProduto(parseInt(this.dataset.id));
           await State.reloadCatalogo();
           render();
-          Utils.toast('Produto excluído.');
+          Utils.toast('Produto excluído.', 'success');
         }catch(e){
-          Utils.toast(e.message || 'Erro ao excluir.');
+          Utils.toast(e.message || 'Erro ao excluir.', 'error');
         }
       });
     });
@@ -107,7 +107,7 @@ const PageCatalogo = (function(){
 
   function openNew(){
     if(State.fornecedoresList().length === 0){
-      Utils.toast('Cadastre um fornecedor primeiro.');
+      Utils.toast('Cadastre um fornecedor primeiro.', 'error');
       return;
     }
     editingId = null;
@@ -143,8 +143,8 @@ const PageCatalogo = (function(){
       const fornecedor = $('prodModalForn').value;
       const descricao = $('prodModalDesc').value.trim();
       const valorUnit = parseFloat($('prodModalValor').value);
-      if(!descricao){ Utils.toast('Descrição não pode ficar vazia.'); return; }
-      if(isNaN(valorUnit) || valorUnit < 0){ Utils.toast('Informe o preço de compra.'); return; }
+      if(!descricao){ Utils.toast('Descrição não pode ficar vazia.', 'error'); return; }
+      if(isNaN(valorUnit) || valorUnit < 0){ Utils.toast('Informe o preço de compra.', 'error'); return; }
 
       const produto = {
         fornecedor,
@@ -162,9 +162,9 @@ const PageCatalogo = (function(){
         await State.reloadCatalogo();
         $('produtoModal').classList.remove('open');
         render();
-        Utils.toast(editingId ? 'Produto atualizado.' : 'Produto adicionado.');
+        Utils.toast(editingId ? 'Produto atualizado.' : 'Produto adicionado.', 'success');
       }catch(e){
-        Utils.toast(e.message || 'Erro ao salvar produto.');
+        Utils.toast(e.message || 'Erro ao salvar produto.', 'error');
       }
     });
 
@@ -175,9 +175,9 @@ const PageCatalogo = (function(){
         await State.reloadCatalogo();
         $('produtoModal').classList.remove('open');
         render();
-        Utils.toast('Produto excluído.');
+        Utils.toast('Produto excluído.', 'success');
       }catch(e){
-        Utils.toast(e.message || 'Erro ao excluir.');
+        Utils.toast(e.message || 'Erro ao excluir.', 'error');
       }
     });
   }
@@ -189,6 +189,25 @@ const PageCatalogo = (function(){
     bindProdutoModal();
   }
 
+  /* ---------- skeleton (enquanto aguarda o backend) ---------- */
+  function showSkeleton(){
+    $('catalogoEmpty').style.display = 'none';
+    $('catalogoTableWrap').style.display = 'block';
+    const tbody = $('catalogoTbody');
+    tbody.innerHTML = '';
+    for(let i = 0; i < 6; i++){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="skeleton skeleton-bar" style="width:75%;"></span></td>
+        <td><span class="skeleton skeleton-bar" style="width:50%;"></span></td>
+        <td><span class="skeleton skeleton-bar" style="width:65%;"></span></td>
+        <td><span class="skeleton skeleton-bar" style="width:85%;"></span></td>
+        <td class="num"><span class="skeleton skeleton-bar" style="width:60px; margin-left:auto;"></span></td>
+        <td></td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
   bind();
-  return { refresh: render };
+  return { refresh: render, showSkeleton };
 })();

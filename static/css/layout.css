@@ -84,10 +84,20 @@
 .topbar h2{ font-family:var(--font-display); font-size:22px; letter-spacing:0.01em; color:var(--ink); }
 .topbar .page-sub{ color:var(--text-muted); font-size:13px; margin-top:4px; }
 .topbar-actions{ display:flex; gap:10px; }
+.topbar-right{ display:flex; align-items:center; gap:14px; }
 .topbar-date{
   font-family:var(--font-mono); font-size:12px; color:var(--text-faint);
-  text-transform:capitalize; white-space:nowrap; padding-bottom:2px;
+  text-transform:capitalize; white-space:nowrap;
 }
+.theme-toggle{
+  width:36px; height:36px; flex:0 0 36px; border-radius:50%;
+  border:1.5px solid var(--border-strong); background:var(--surface); color:var(--text-muted);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.theme-toggle svg{ width:16px; height:16px; }
+.theme-toggle:hover{ background:var(--surface-alt); color:var(--text); border-color:var(--steel); }
+.theme-toggle:active{ transform:translateY(1px); }
 
 .content{
   flex:1;

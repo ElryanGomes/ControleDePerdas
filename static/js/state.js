@@ -15,12 +15,12 @@ const State = {
 
   async reloadCatalogo(){
     try{ this.catalogo = await Api.getCatalogo(); }
-    catch(e){ Utils.toast(e.message || 'Erro ao carregar catálogo.'); }
+    catch(e){ Utils.toast(e.message || 'Erro ao carregar catálogo.', 'error'); }
   },
 
   async reloadPerdas(){
     try{ this.perdas = await Api.getPerdas(); }
-    catch(e){ Utils.toast(e.message || 'Erro ao carregar perdas.'); }
+    catch(e){ Utils.toast(e.message || 'Erro ao carregar perdas.', 'error'); }
   },
 
   fornecedoresList(){

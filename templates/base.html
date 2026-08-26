@@ -6,6 +6,20 @@
 <meta name="description" content="Controle de Perdas — registro de produtos vencidos e avariados.">
 <title>{% block title %}Controle de Perdas{% endblock %}</title>
 
+<script>
+  // aplica o tema salvo (ou a preferência do sistema) antes da primeira pintura,
+  // evitando o "flash" de tema claro seguido de escuro.
+  (function(){
+    try{
+      var saved = localStorage.getItem('controlePerdas_theme');
+      if(!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+        saved = 'dark';
+      }
+      if(saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    }catch(e){}
+  })();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -30,7 +44,10 @@
         <h2 id="pageTitle">Registrar perda</h2>
         <p class="page-sub" id="pageSubtitle">Lance um item vencido ou avariado no controle.</p>
       </div>
-      <div class="topbar-date" id="topbarDate"></div>
+      <div class="topbar-right">
+        <span class="topbar-date" id="topbarDate"></span>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Alternar tema escuro"></button>
+      </div>
     </header>
 
     <main class="content">

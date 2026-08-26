@@ -183,21 +183,21 @@ const PageRelatorio = (function(){
     const validade = $('perdaModalValidade').value.trim();
     const valorUnit = parseFloat($('perdaModalValor').value);
 
-    if(!fornecedor){ Utils.toast('Informe o fornecedor.'); return; }
-    if(!descricao){ Utils.toast('Informe a descrição.'); return; }
-    if(!tipo){ Utils.toast('Selecione Vencido ou Avariado.'); return; }
-    if(!quantidade || quantidade < 1){ Utils.toast('Informe a quantidade.'); return; }
-    if(!validade){ Utils.toast('Informe a validade.'); return; }
-    if(isNaN(valorUnit) || valorUnit < 0){ Utils.toast('Informe o valor unitário.'); return; }
+    if(!fornecedor){ Utils.toast('Informe o fornecedor.', 'error'); return; }
+    if(!descricao){ Utils.toast('Informe a descrição.', 'error'); return; }
+    if(!tipo){ Utils.toast('Selecione Vencido ou Avariado.', 'error'); return; }
+    if(!quantidade || quantidade < 1){ Utils.toast('Informe a quantidade.', 'error'); return; }
+    if(!validade){ Utils.toast('Informe a validade.', 'error'); return; }
+    if(isNaN(valorUnit) || valorUnit < 0){ Utils.toast('Informe o valor unitário.', 'error'); return; }
 
     try{
       await Api.atualizarPerda(editingPerdaId, { fornecedor, descricao, codigo, tipo, quantidade, validade, valorUnit });
       await State.reloadAll();
       $('perdaModal').classList.remove('open');
       render();
-      Utils.toast('Registro atualizado.');
+      Utils.toast('Registro atualizado.', 'success');
     }catch(e){
-      Utils.toast(e.message || 'Erro ao salvar.');
+      Utils.toast(e.message || 'Erro ao salvar.', 'error');
     }
   }
 
@@ -207,16 +207,16 @@ const PageRelatorio = (function(){
       await Api.excluirPerda(id);
       await State.reloadPerdas();
       render();
-      Utils.toast('Registro excluído.');
+      Utils.toast('Registro excluído.', 'success');
     }catch(e){
-      Utils.toast(e.message || 'Erro ao excluir.');
+      Utils.toast(e.message || 'Erro ao excluir.', 'error');
     }
   }
 
   /* ---------- exportar CSV ---------- */
   function exportCSV(){
     const list = filtered();
-    if(list.length === 0){ Utils.toast('Não há registros para exportar.'); return; }
+    if(list.length === 0){ Utils.toast('Não há registros para exportar.', 'error'); return; }
 
     const headers = ['Distribuidora','Descrição','Vencido ou Avariado','Quantidade','Código','Validade','Valor Unitário','Valor Total'];
     const rows = list.map(p => [
@@ -233,7 +233,7 @@ const PageRelatorio = (function(){
     a.download = 'planilha_perdas_' + new Date().toISOString().slice(0, 10) + '.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    Utils.toast('CSV exportado.');
+    Utils.toast('CSV exportado com sucesso!', 'success');
   }
 
   /* ---------- binds ---------- */
@@ -268,6 +268,36 @@ const PageRelatorio = (function(){
     $('btnSavePerda').addEventListener('click', salvarEdicaoPerda);
   }
 
+  /* ---------- skeleton (enquanto aguarda o backend) ---------- */
+  function showSkeleton(){
+    $('relatorioEmpty').style.display = 'none';
+    $('relatorioContent').style.display = 'block';
+
+    $('relTotValor').innerHTML = '<span class="skeleton skeleton-bar" style="width:100px;"></span>';
+
+    const wrap = $('relatorioGroups');
+    wrap.innerHTML = '';
+    for(let i = 0; i < 2; i++){
+      const card = document.createElement('div');
+      card.className = 'panel report-card';
+      const linhas = Array.from({ length: 3 }).map(() => `
+        <div class="skeleton-row-line">
+          <span class="skeleton skeleton-bar" style="width:34%;"></span>
+          <span class="skeleton skeleton-bar" style="width:60px;"></span>
+          <span class="skeleton skeleton-bar" style="width:30px;"></span>
+          <span class="skeleton skeleton-bar" style="width:70px;"></span>
+          <span class="skeleton skeleton-bar" style="width:70px;"></span>
+        </div>`).join('');
+      card.innerHTML = `
+        <div class="report-card-header">
+          <span class="skeleton skeleton-bar" style="width:150px;"></span>
+          <span class="skeleton skeleton-bar" style="width:70px;"></span>
+        </div>
+        ${linhas}`;
+      wrap.appendChild(card);
+    }
+  }
+
   bind();
-  return { refresh: render };
+  return { refresh: render, showSkeleton };
 })();
