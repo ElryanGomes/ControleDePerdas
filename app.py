@@ -9,7 +9,14 @@ Rodar localmente:
 Deploy no PythonAnywhere: veja README.md
 """
 import os
-from flask import Flask, request, jsonify, render_template
+from datetime import datetime
+from io import BytesIO
+
+from flask import Flask, request, jsonify, render_template, send_file
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+
 from models import db, Fornecedor, Produto, Perda
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -223,6 +230,168 @@ def atualizar_perda(perda_id):
 
     db.session.commit()
     return jsonify(perda.to_dict())
+
+
+@app.route('/api/export/xlsx', methods=['POST'])
+def exportar_xlsx():
+    """Gera um relatório Excel (.xlsx) de perdas, com uma aba por fornecedor.
+
+    Recebe no corpo JSON os registros já filtrados pelo front-end
+    (mesma lista exibida na tela de Relatório), no formato:
+        { "perdas": [ {fornecedor, descricao, tipo, quantidade,
+                        codigo, validade, valorUnit, valorTotal}, ... ] }
+    """
+    data = request.get_json(force=True) or {}
+    perdas = data.get('perdas') or []
+    if not perdas:
+        return jsonify({'erro': 'Nenhum registro para exportar.'}), 400
+
+    # agrupa por fornecedor, preservando a ordem de primeira aparição
+    grupos = {}
+    ordem = []
+    for p in perdas:
+        forn = (p.get('fornecedor') or 'SEM FORNECEDOR').strip()
+        if forn not in grupos:
+            grupos[forn] = []
+            ordem.append(forn)
+        grupos[forn].append(p)
+
+    wb = Workbook()
+    wb.remove(wb.active)  # remove a aba padrão em branco
+
+    # ---------- estilos ----------
+    AZUL_ESCURO = 'FF1F3864'
+    AZUL_TITULO = 'FF2F75B5'
+    AZUL_CLARO = 'FFDCE6F1'
+    BRANCO = 'FFFFFFFF'
+    CINZA_BORDA = 'FFB7B7B7'
+
+    fonte_header_principal = Font(name='Calibri', size=14, bold=True, color=AZUL_ESCURO)
+    fonte_titulo_coluna = Font(name='Calibri', size=11, bold=True, color=BRANCO)
+    fonte_rodape = Font(name='Calibri', size=11, bold=True)
+
+    fill_titulo = PatternFill('solid', fgColor=AZUL_TITULO)
+    fill_soma = PatternFill('solid', fgColor=AZUL_CLARO)
+
+    borda_fina = Border(
+        left=Side(style='thin', color=CINZA_BORDA),
+        right=Side(style='thin', color=CINZA_BORDA),
+        top=Side(style='thin', color=CINZA_BORDA),
+        bottom=Side(style='thin', color=CINZA_BORDA),
+    )
+
+    align_center = Alignment(horizontal='center', vertical='center')
+    align_left = Alignment(horizontal='left', vertical='center')
+    align_right = Alignment(horizontal='right', vertical='center')
+
+    COLUNAS = ['ITEM', 'DESCRIÇÃO', 'STATUS', 'QUANT.', 'CÓDIGO', 'VALIDADE', 'VALOR UNIT.', 'VALOR TOTAL']
+    LARGURAS = [8, 45, 14, 10, 14, 14, 14, 16]
+    FORMATO_MOEDA = 'R$ #,##0.00'
+
+    nomes_usados = set()
+
+    for forn in ordem:
+        itens = grupos[forn]
+
+        # nome da aba: versão curta/título do fornecedor (ex: "M Dias Branco")
+        nome_aba = forn.strip().title()
+        for ch in ('\\', '/', '?', '*', '[', ']', ':'):
+            nome_aba = nome_aba.replace(ch, '')
+        nome_aba = (nome_aba[:31] or 'Fornecedor')
+        base_nome, sufixo_n = nome_aba, 2
+        while nome_aba in nomes_usados:
+            sufixo = f' ({sufixo_n})'
+            nome_aba = base_nome[:31 - len(sufixo)] + sufixo
+            sufixo_n += 1
+        nomes_usados.add(nome_aba)
+
+        ws = wb.create_sheet(title=nome_aba)
+
+        for idx, largura in enumerate(LARGURAS, start=1):
+            ws.column_dimensions[get_column_letter(idx)].width = largura
+
+        # ---------- 1) cabeçalho principal (linha 1) ----------
+        ws.merge_cells('A1:H1')
+        titulo_cell = ws['A1']
+        titulo_cell.value = f'RELATÓRIO DE PERDAS - {forn.strip().upper()}'
+        titulo_cell.font = fonte_header_principal
+        titulo_cell.alignment = align_center
+        ws.row_dimensions[1].height = 26
+
+        # ---------- 2) títulos das colunas (linha 3) ----------
+        header_row = 3
+        for col_idx, titulo in enumerate(COLUNAS, start=1):
+            c = ws.cell(row=header_row, column=col_idx, value=titulo)
+            c.font = fonte_titulo_coluna
+            c.fill = fill_titulo
+            c.alignment = align_center
+            c.border = borda_fina
+
+        # ---------- 3) dados (a partir da linha 4) ----------
+        primeira_linha = header_row + 1
+        linha = primeira_linha
+        for item_num, p in enumerate(itens, start=1):
+            quantidade = p.get('quantidade') or 0
+            valor_unit = p.get('valorUnit') or 0
+
+            valores = [
+                item_num,
+                p.get('descricao') or '',
+                p.get('tipo') or '',
+                quantidade,
+                p.get('codigo') or '',
+                p.get('validade') or '',
+                valor_unit,
+                None,  # VALOR TOTAL vira fórmula abaixo
+            ]
+            for col_idx, valor in enumerate(valores, start=1):
+                c = ws.cell(row=linha, column=col_idx, value=valor)
+                c.border = borda_fina
+                c.alignment = align_left if col_idx == 2 else align_center
+
+            ws.cell(row=linha, column=7).number_format = FORMATO_MOEDA
+
+            formula_cell = ws.cell(row=linha, column=8, value=f'=D{linha}*G{linha}')
+            formula_cell.number_format = FORMATO_MOEDA
+            formula_cell.border = borda_fina
+            formula_cell.alignment = align_center
+
+            linha += 1
+
+        ultima_linha_dados = linha - 1
+
+        # ---------- 4) rodapé de totalização ----------
+        linha_rodape = linha
+        ws.merge_cells(f'A{linha_rodape}:G{linha_rodape}')
+        rotulo = ws.cell(row=linha_rodape, column=1, value='TOTAL DE PERDAS DESTE FORNECEDOR:')
+        rotulo.font = fonte_rodape
+        rotulo.alignment = align_right
+        for col_idx in range(1, 8):
+            ws.cell(row=linha_rodape, column=col_idx).border = borda_fina
+
+        soma_cell = ws.cell(
+            row=linha_rodape, column=8,
+            value=f'=SUM(H{primeira_linha}:H{ultima_linha_dados})'
+        )
+        soma_cell.font = fonte_rodape
+        soma_cell.number_format = FORMATO_MOEDA
+        soma_cell.fill = fill_soma
+        soma_cell.alignment = align_center
+        soma_cell.border = borda_fina
+
+        ws.freeze_panes = f'A{primeira_linha}'
+
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    filename = f"relatorio_perdas_{datetime.utcnow().strftime('%Y-%m-%d')}.xlsx"
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
 
 
 @app.route('/api/perdas/<int:perda_id>', methods=['DELETE'])

@@ -84,13 +84,13 @@ const PageRelatorio = (function(){
             <thead>
               <tr>
                 <th>Descrição</th>
-                <th>Motivo</th>
-                <th class="num">Qtd.</th>
-                <th>Código</th>
-                <th>Validade</th>
-                <th class="num">Val. Unit.</th>
-                <th class="num">Val. Total</th>
-                <th></th>
+                <th class="center">Motivo</th>
+                <th class="num center">Qtd.</th>
+                <th class="center">Código</th>
+                <th class="center">Validade</th>
+                <th class="num center">Val. Unit.</th>
+                <th class="num center">Val. Total</th>
+                <th class="center"></th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -102,13 +102,13 @@ const PageRelatorio = (function(){
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td>${Utils.escapeHtml(p.descricao)}</td>
-          <td><span class="badge ${p.tipo}">${p.tipo}</span></td>
-          <td class="num">${p.quantidade}</td>
-          <td class="mono">${p.codigo || '—'}</td>
-          <td class="mono">${p.validade}</td>
-          <td class="num">${Utils.fmtBRL(p.valorUnit)}</td>
-          <td class="num">${Utils.fmtBRL(p.valorTotal)}</td>
-          <td><button class="kebab-btn" data-id="${p.id}">⋮</button></td>`;
+          <td class="center"><span class="badge ${p.tipo}">${p.tipo}</span></td>
+          <td class="num center">${p.quantidade}</td>
+          <td class="mono center">${p.codigo || '—'}</td>
+          <td class="mono center">${Utils.formatValidade(p.validade)}</td>
+          <td class="num center">${Utils.fmtBRL(p.valorUnit)}</td>
+          <td class="num center">${Utils.fmtBRL(p.valorTotal)}</td>
+          <td class="center"><button class="kebab-btn" data-id="${p.id}">⋮</button></td>`;
         tbody.appendChild(tr);
       });
 
@@ -236,11 +236,34 @@ const PageRelatorio = (function(){
     Utils.toast('CSV exportado com sucesso!', 'success');
   }
 
+  async function exportXLSX(){
+    const list = filtered();
+    if(list.length === 0){ Utils.toast('Não há registros para exportar.', 'error'); return; }
+
+    const btn = $('btnExportXLSX');
+    btn.disabled = true;
+    try{
+      const blob = await Api.exportarXLSX(list);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'relatorio_perdas_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      Utils.toast('Excel exportado com sucesso!', 'success');
+    }catch(e){
+      Utils.toast(e.message || 'Erro ao gerar o Excel.', 'error');
+    }finally{
+      btn.disabled = false;
+    }
+  }
+
   /* ---------- binds ---------- */
   function bind(){
     $('filtroForn').addEventListener('input', render);
     $('filtroTipo').addEventListener('change', render);
     $('btnExportCSV').addEventListener('click', exportCSV);
+    $('btnExportXLSX').addEventListener('click', exportXLSX);
 
     $('kebabEdit').addEventListener('click', () => {
       const id = kebabTargetId;

@@ -13,6 +13,12 @@ const Utils = (function(){
     }[c]));
   }
 
+  function formatValidade(v){
+    if(!v) return '—';
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v); // formato ISO (input type=date) -> dd/mm/aaaa
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : v;
+  }
+
   const TOAST_ICONS = {
     success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>',
     error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
@@ -48,5 +54,5 @@ const Utils = (function(){
     return arr;
   }
 
-  return { fmtBRL, escapeHtml, toast, ultimosMeses, MESES_ABBR };
+  return { fmtBRL, escapeHtml, formatValidade, toast, ultimosMeses, MESES_ABBR };
 })();

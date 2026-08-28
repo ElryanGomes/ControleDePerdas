@@ -148,7 +148,7 @@ const PageRegistrar = (function(){
     $('prevCodigo').textContent = $('codigoProdutoInput').value.trim() || '—';
     $('prevTipo').textContent = tipoAtual || '—';
     $('prevQtd').textContent = qtd || '—';
-    $('prevValidade').textContent = $('ilegivelCheck').checked ? 'ILEGÍVEL' : ($('validadeInput').value || '—');
+    $('prevValidade').textContent = $('ilegivelCheck').checked ? 'ILEGÍVEL' : Utils.formatValidade($('validadeInput').value);
   }
 
   function resetForm(){
@@ -184,7 +184,8 @@ const PageRegistrar = (function(){
     const valorUnit = parseFloat($('valorUnitInput').value);
     const qtd = parseInt($('qtdInput').value);
     const ilegivel = $('ilegivelCheck').checked;
-    const validade = ilegivel ? 'ILEGÍVEL' : ($('validadeInput').value || '');
+    const validadeInput = $('validadeInput').value;
+    const validade = ilegivel ? 'ILEGÍVEL' : (validadeInput ? Utils.formatValidade(validadeInput) : '');
 
     if(!descricao){ Utils.toast('Informe a descrição do produto.', 'error'); return; }
     if(!tipoAtual){ Utils.toast('Selecione Vencido ou Avariado.', 'error'); return; }

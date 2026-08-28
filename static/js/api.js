@@ -23,6 +23,24 @@ const Api = (function(){
     return res.status === 204 ? null : res.json();
   }
 
+  async function requestBlob(path, options = {}){
+    let res;
+    try{
+      res = await fetch(BASE + path, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options
+      });
+    }catch(e){
+      throw new Error('Não foi possível conectar ao servidor.');
+    }
+    if(!res.ok){
+      let msg = 'Erro na requisição (' + res.status + ').';
+      try{ const j = await res.json(); if(j.erro) msg = j.erro; }catch(e){}
+      throw new Error(msg);
+    }
+    return res.blob();
+  }
+
   return {
     getCatalogo: () => request('/catalogo'),
     criarFornecedor: (nome) => request('/fornecedores', { method: 'POST', body: JSON.stringify({ nome }) }),
@@ -34,6 +52,8 @@ const Api = (function(){
     getPerdas: () => request('/perdas'),
     criarPerda: (perda) => request('/perdas', { method: 'POST', body: JSON.stringify(perda) }),
     atualizarPerda: (id, perda) => request(`/perdas/${id}`, { method: 'PUT', body: JSON.stringify(perda) }),
-    excluirPerda: (id) => request(`/perdas/${id}`, { method: 'DELETE' })
+    excluirPerda: (id) => request(`/perdas/${id}`, { method: 'DELETE' }),
+
+    exportarXLSX: (perdas) => requestBlob('/export/xlsx', { method: 'POST', body: JSON.stringify({ perdas }) })
   };
 })();
