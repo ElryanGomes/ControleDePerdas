@@ -16,6 +16,7 @@ from flask import Flask, request, jsonify, render_template, send_file
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.workbook.properties import CalcProperties
 
 from models import db, Fornecedor, Produto, Perda
 
@@ -258,6 +259,12 @@ def exportar_xlsx():
 
     wb = Workbook()
     wb.remove(wb.active)  # remove a aba padrão em branco
+
+    # sem isso, o Excel pode abrir mostrando 0 nas fórmulas até o usuário
+    # forçar um recálculo manual (F9) — o openpyxl não grava um valor
+    # "em cache" para as fórmulas, então avisamos o Excel pra recalcular
+    # tudo assim que o arquivo for aberto.
+    wb.calculation = CalcProperties(fullCalcOnLoad=True)
 
     # ---------- estilos ----------
     AZUL_ESCURO = 'FF1F3864'

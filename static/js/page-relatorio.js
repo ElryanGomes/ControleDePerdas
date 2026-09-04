@@ -22,10 +22,14 @@ const PageRelatorio = (function(){
   }
 
   function filtered(){
-    const termo = $('filtroForn').value.trim().toLowerCase();
+    const termoForn = $('filtroForn').value.trim().toLowerCase();
+    const termoBusca = $('filtroBusca').value.trim().toLowerCase();
     const tipo = $('filtroTipo').value;
     return State.perdas.filter(p =>
-      (!termo || p.fornecedor.toLowerCase().includes(termo)) &&
+      (!termoForn || p.fornecedor.toLowerCase().includes(termoForn)) &&
+      (!termoBusca ||
+        (p.descricao || '').toLowerCase().includes(termoBusca) ||
+        (p.codigo || '').toLowerCase().includes(termoBusca)) &&
       (!tipo || p.tipo === tipo)
     );
   }
@@ -261,6 +265,7 @@ const PageRelatorio = (function(){
   /* ---------- binds ---------- */
   function bind(){
     $('filtroForn').addEventListener('input', render);
+    $('filtroBusca').addEventListener('input', render);
     $('filtroTipo').addEventListener('change', render);
     $('btnExportCSV').addEventListener('click', exportCSV);
     $('btnExportXLSX').addEventListener('click', exportXLSX);

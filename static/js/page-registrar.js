@@ -9,6 +9,7 @@
 const PageRegistrar = (function(){
   const $ = (id) => document.getElementById(id);
   let tipoAtual = null;
+  const tocados = new Set(); // campos que o usuário já "visitou" (blur) — evita mostrar erro antes da hora
 
   /* ---------- fornecedores mais usados (para os balões de acesso rápido) ---------- */
   function fornecedoresMaisUsados(limit = 6){
@@ -48,6 +49,39 @@ const PageRegistrar = (function(){
     });
   }
 
+  /* ---------- busca fuzzy (tolerante a erro de digitação/acento) ---------- */
+  function renderSugestoesFuzzy(){
+    const query = $('fornecedorInput').value;
+    const wrap = $('fornecedorSugestoes');
+    const nomes = FuzzySearch.buscar(query, State.fornecedoresList(), 6);
+
+    if(nomes.length === 0){
+      wrap.classList.remove('open');
+      wrap.innerHTML = '';
+      return;
+    }
+
+    wrap.innerHTML = nomes.map(nome =>
+      `<div class="fuzzy-suggestion-item" data-nome="${Utils.escapeHtml(nome)}">${Utils.escapeHtml(nome)}</div>`
+    ).join('');
+    wrap.classList.add('open');
+
+    wrap.querySelectorAll('.fuzzy-suggestion-item').forEach(el => {
+      // mousedown (não click) + preventDefault: garante que o item seja escolhido
+      // antes do input perder o foco e a lista fechar
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        escolherFornecedor(el.dataset.nome);
+        wrap.classList.remove('open');
+        wrap.innerHTML = '';
+      });
+    });
+  }
+
+  function esconderSugestoesFuzzy(){
+    $('fornecedorSugestoes').classList.remove('open');
+  }
+
   function showFornecedorCard(show){
     $('fornecedorCard').style.display = show ? 'block' : 'none';
     if(show){ renderFornChipsFrequentes(); renderFornDatalist(); }
@@ -57,6 +91,7 @@ const PageRegistrar = (function(){
   function escolherFornecedor(nome){
     State.fornecedorAtual = nome;
     $('fornecedorInput').value = nome;
+    esconderSugestoesFuzzy();
     showFornecedorCard(false);
     setProdutoCardEnabled(true);
     updateFornecedorLine();
@@ -149,6 +184,45 @@ const PageRegistrar = (function(){
     $('prevTipo').textContent = tipoAtual || '—';
     $('prevQtd').textContent = qtd || '—';
     $('prevValidade').textContent = $('ilegivelCheck').checked ? 'ILEGÍVEL' : Utils.formatValidade($('validadeInput').value);
+
+    revalidarForm();
+  }
+
+  /* ---------- validação preditiva (espelha as regras do backend) ---------- */
+  function marcarInvalido(el, invalido){
+    if(!el) return;
+    el.classList.toggle('input-invalid', !!invalido);
+  }
+
+  function revalidarForm(){
+    const desc = $('descInput').value.trim();
+    const valorUnitStr = $('valorUnitInput').value;
+    const valorUnit = parseFloat(valorUnitStr);
+    const qtdStr = $('qtdInput').value;
+    const qtd = parseInt(qtdStr, 10);
+    const ilegivel = $('ilegivelCheck').checked;
+    const validadeStr = $('validadeInput').value;
+
+    const erroFornecedor = !State.fornecedorAtual;
+    const erroDesc = !desc;
+    const erroValorUnit = valorUnitStr === '' || isNaN(valorUnit) || valorUnit < 0;
+    const erroQtd = qtdStr === '' || isNaN(qtd) || qtd < 1;
+    const erroValidade = !ilegivel && !validadeStr;
+    const erroTipo = !tipoAtual;
+
+    // borda vermelha: só depois que o usuário "visitou" o campo (blur),
+    // ou imediatamente se ele já digitou algo e ficou inválido (ex: valor negativo)
+    marcarInvalido($('descInput'), erroDesc && tocados.has('desc'));
+    marcarInvalido($('valorUnitInput'), erroValorUnit && (tocados.has('valorUnit') || valorUnitStr !== ''));
+    marcarInvalido($('qtdInput'), erroQtd && (tocados.has('qtd') || qtdStr !== ''));
+    marcarInvalido($('validadeInput'), erroValidade && tocados.has('validade'));
+
+    const hintTipo = $('tipoErrorHint');
+    if(hintTipo) hintTipo.style.display = (erroTipo && tocados.has('tipo')) ? 'block' : 'none';
+
+    const valido = !(erroFornecedor || erroDesc || erroValorUnit || erroQtd || erroValidade || erroTipo);
+    $('btnSalvarPerda').disabled = !valido;
+    return valido;
   }
 
   function resetForm(){
@@ -166,6 +240,12 @@ const PageRegistrar = (function(){
     document.querySelectorAll('#page-registrar .toggle-btn').forEach(b => b.classList.remove('active'));
     tipoAtual = null;
     State.fornecedorAtual = '';
+
+    tocados.clear();
+    ['descInput', 'valorUnitInput', 'qtdInput', 'validadeInput'].forEach(id => marcarInvalido($(id), false));
+    const hintTipo = $('tipoErrorHint');
+    if(hintTipo) hintTipo.style.display = 'none';
+    $('btnSalvarPerda').disabled = true;
 
     $('scanStatusHint').textContent = 'Aponte a câmera ou digite o código de barras do produto.';
     $('scanStatusHint').className = 'lookup-hint';
@@ -233,6 +313,9 @@ const PageRegistrar = (function(){
     });
 
     // fornecedor
+    $('fornecedorInput').addEventListener('input', renderSugestoesFuzzy);
+    $('fornecedorInput').addEventListener('focus', renderSugestoesFuzzy);
+    $('fornecedorInput').addEventListener('blur', () => setTimeout(esconderSugestoesFuzzy, 120));
     $('fornecedorInput').addEventListener('change', function(){
       const nome = this.value.trim();
       if(nome) escolherFornecedor(nome);
@@ -249,11 +332,15 @@ const PageRegistrar = (function(){
     // produto
     $('codigoProdutoInput').addEventListener('input', updatePreview);
     $('descInput').addEventListener('input', checkProdutoReady);
+    $('descInput').addEventListener('blur', () => { tocados.add('desc'); revalidarForm(); });
     $('valorUnitInput').addEventListener('input', checkProdutoReady);
+    $('valorUnitInput').addEventListener('blur', () => { tocados.add('valorUnit'); revalidarForm(); });
 
     // detalhes da perda
     $('qtdInput').addEventListener('input', updatePreview);
+    $('qtdInput').addEventListener('blur', () => { tocados.add('qtd'); tocados.add('tipo'); revalidarForm(); });
     $('validadeInput').addEventListener('input', updatePreview);
+    $('validadeInput').addEventListener('blur', () => { tocados.add('validade'); tocados.add('tipo'); revalidarForm(); });
 
     document.querySelectorAll('#page-registrar .toggle-btn').forEach(btn => {
       btn.addEventListener('click', function(){

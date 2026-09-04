@@ -249,7 +249,11 @@ table.data-table tfoot td.num{ font-family:var(--font-mono); font-size:14px; col
   flex:0 0 24px; height:24px; border-radius:6px; background:var(--bg); color:var(--ink);
   display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:11.5px; font-weight:600;
 }
-.rank-row:first-child .rank-badge{ background:var(--accent); color:#fff; }
+.rank-row:nth-child(1) .rank-badge{ background:#7A231C; color:#fff; }
+.rank-row:nth-child(2) .rank-badge{ background:#D9762B; color:#fff; }
+.rank-row:nth-child(3) .rank-badge{ background:#E8C34A; color:#4A3B0A; }
+.rank-row:nth-child(4) .rank-badge,
+.rank-row:nth-child(5) .rank-badge{ background:var(--border-strong); color:var(--text-muted); }
 .rank-info{ flex:1; min-width:0; }
 .rank-info .rname{ font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .rank-info .rsub{ font-size:11.5px; color:var(--text-muted); margin-top:1px; }
@@ -330,3 +334,28 @@ table.data-table tfoot td.num{ font-family:var(--font-mono); font-size:14px; col
   padding:12px 20px; border-bottom:1px solid var(--border);
 }
 .skeleton-row-line:last-child{ border-bottom:none; }
+
+/* ---------- validação preditiva (espelha as regras do backend) ---------- */
+input.input-invalid{
+  border-color:var(--danger) !important;
+  box-shadow:0 0 0 3px var(--danger-soft) !important;
+}
+.field-error-hint{
+  font-size:11.5px; color:var(--danger); margin:-8px 0 12px;
+  font-family:var(--font-body); text-transform:none; letter-spacing:0;
+}
+
+/* ---------- busca fuzzy (sugestões de fornecedor) ---------- */
+.fuzzy-suggestions{
+  display:none;
+  position:absolute; top:100%; left:0; right:0; margin-top:4px;
+  background:var(--surface); border:1px solid var(--border-strong); border-radius:var(--radius-sm);
+  box-shadow:var(--shadow-md); z-index:30; max-height:220px; overflow-y:auto;
+}
+.fuzzy-suggestions.open{ display:block; }
+.fuzzy-suggestion-item{
+  padding:9px 13px; font-size:13px; cursor:pointer; color:var(--text);
+  border-bottom:1px solid var(--border);
+}
+.fuzzy-suggestion-item:last-child{ border-bottom:none; }
+.fuzzy-suggestion-item:hover{ background:var(--surface-alt); }

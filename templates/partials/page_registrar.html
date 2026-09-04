@@ -27,8 +27,9 @@
 
         <div class="field">
           <label class="field-label">Selecionar ou pesquisar fornecedor</label>
-          <input type="text" id="fornecedorInput" list="fornecedoresDatalist" placeholder="Digite para pesquisar ou escolha na lista…">
+          <input type="text" id="fornecedorInput" list="fornecedoresDatalist" placeholder="Digite para pesquisar ou escolha na lista…" autocomplete="off">
           <datalist id="fornecedoresDatalist"></datalist>
+          <div id="fornecedorSugestoes" class="fuzzy-suggestions"></div>
         </div>
 
         <button type="button" class="btn btn-outline btn-sm" id="btnAddFornRegistrar">+ Adicionar fornecedor novo</button>
@@ -73,6 +74,7 @@
           <button type="button" class="toggle-btn" data-tipo="VENCIDO">Vencido</button>
           <button type="button" class="toggle-btn" data-tipo="AVARIADO">Avariado</button>
         </div>
+        <div id="tipoErrorHint" class="field-error-hint" style="display:none;">Selecione Vencido ou Avariado.</div>
 
         <div class="field-row">
           <div class="field">
