@@ -59,3 +59,89 @@
     min-height:46px;
   }
 }
+
+/* ============================================================
+   MOBILE: Ajustes de layout para < 768px
+   ============================================================ */
+@media (max-width: 768px){
+  /* Rankings */
+  #page-rankings .summary-grid{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+
+  #page-rankings .metric-toggle{
+    width:100%;
+    flex-wrap:wrap;
+  }
+
+  #page-rankings .rank-columns{
+    grid-template-columns:1fr;
+    gap:16px;
+  }
+
+  /* Catálogo */
+  #page-catalogo .catalogo-toolbar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  #page-catalogo .catalogo-toolbar select{
+    width:100%;
+  }
+}
+
+/* ============================================================
+   SMALL MOBILE: Ajustes adicionais para <= 480px
+   ============================================================ */
+@media (max-width: 480px){
+  .toggle-btn{
+    padding:14px 8px;
+    font-size:13px;
+    min-height:44px;
+  }
+
+  .btn{
+    padding:12px 16px;
+    min-height:44px;
+    font-size:13px;
+  }
+
+  .btn-block{
+    min-height:48px;
+  }
+
+  .btn-sm{
+    padding:10px 14px;
+    min-height:40px;
+  }
+
+  .chip{
+    padding:8px 12px;
+    font-size:12px;
+    min-height:36px;
+  }
+
+  .field-label{
+    font-size:10px;
+  }
+
+  input[type=text],
+  input[type=number],
+  input[type=date],
+  select,
+  textarea{
+    padding:12px 12px;
+    font-size:16px;
+    min-height:44px;
+  }
+
+  .preview-row{
+    font-size:12px;
+    padding:7px 0;
+  }
+
+  .section-block{
+    margin-bottom:20px;
+  }
+}
