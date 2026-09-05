@@ -12,6 +12,7 @@ const Mobile = (function(){
     sidebar.classList.add('open');
     hamburger?.classList.add('open');
     overlay?.classList.add('open');
+    document.body.style.overflow = 'hidden'; // previne scroll quando menu aberto
   }
 
   function closeMenu(){
@@ -19,6 +20,7 @@ const Mobile = (function(){
     sidebar.classList.remove('open');
     hamburger?.classList.remove('open');
     overlay?.classList.remove('open');
+    document.body.style.overflow = ''; // restaura scroll
   }
 
   function toggleMenu(){
@@ -31,30 +33,44 @@ const Mobile = (function(){
 
   function init(){
     // hamburger button click
-    hamburger?.addEventListener('click', toggleMenu);
+    hamburger?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu();
+    });
 
     // overlay click fecha o menu
-    overlay?.addEventListener('click', closeMenu);
+    overlay?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMenu();
+    });
 
-    // nav item click fecha o menu e navega para página
+    // nav item click fecha o menu
     navItems.forEach(item => {
-      item.addEventListener('click', function(){
-        const page = this.dataset.page;
+      item.addEventListener('click', function(e){
         closeMenu();
-        
-        // dispara o evento de navegação de página
-        // (presumindo que haja um sistema de navegação de páginas no app.js)
-        if(window.navigateToPage){
-          window.navigateToPage(page);
-        }
       });
     });
 
+    // click fora do menu também fecha (mas dentro da sidebar fica aberto)
+    sidebar?.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
     // fechar menu ao redimensionar para desktop
+    let resizeTimer;
     window.addEventListener('resize', () => {
-      if(window.innerWidth > 768){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if(window.innerWidth > 768){
+          closeMenu();
+        }
+      }, 100);
+    });
+
+    // fechar menu ao apertar ESC
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'Escape' && sidebar?.classList.contains('open')){
         closeMenu();
-        sidebar?.classList.remove('closed');
       }
     });
   }
