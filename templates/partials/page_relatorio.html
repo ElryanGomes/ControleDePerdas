@@ -1,31 +1,65 @@
-<!-- ===================== PÁGINA: RELATÓRIO ===================== -->
+<!-- ===================== PÁGINA: RELATÓRIO (ATUALIZADO) ===================== -->
 <section id="page-relatorio" class="page">
   <div class="filters-bar">
-    <div class="field w-280 mb-0">
-      <input type="text" id="filtroForn" list="filtroFornDatalist" placeholder="Todos os fornecedores — pesquisar…">
-      <datalist id="filtroFornDatalist"></datalist>
+    <div class="filters-row-1">
+      <!-- Busca Fornecedor -->
+      <div class="field w-280 mb-0">
+        <input type="text" id="filtroForn" list="filtroFornDatalist" placeholder="Fornecedor — pesquisar…">
+        <datalist id="filtroFornDatalist"></datalist>
+      </div>
+
+      <!-- Busca Produto -->
+      <div class="field w-280 mb-0">
+        <input type="text" id="filtroProduto" placeholder="Produto — pesquisar…">
+      </div>
+
+      <!-- Filtro Tipo -->
+      <select id="filtroTipo">
+        <option value="">Vencido &amp; Avariado</option>
+        <option value="VENCIDO">Só vencidos</option>
+        <option value="AVARIADO">Só avariados</option>
+      </select>
+
+      <!-- Filtro Data Range -->
+      <div class="filter-date-range">
+        <input type="date" id="filtroDataDe" title="De" placeholder="De">
+        <span class="filter-date-separator">—</span>
+        <input type="date" id="filtroDataAte" title="Até" placeholder="Até">
+      </div>
     </div>
-    <select id="filtroTipo">
-      <option value="">Vencido &amp; Avariado</option>
-      <option value="VENCIDO">Só vencidos</option>
-      <option value="AVARIADO">Só avariados</option>
-    </select>
-    <div class="flex-1"></div>
-    <button class="btn btn-outline" id="btnExportCSV">Exportar planilha (CSV)</button>
-    <button class="btn btn-primary" id="btnExportXLSX">Exportar Excel (.xlsx)</button>
+
+    <div class="filters-row-2">
+      <!-- Botão Limpar Filtros -->
+      <button class="btn btn-outline btn-sm" id="btnLimparFiltros" style="display:none;">Limpar filtros</button>
+
+      <div class="flex-1"></div>
+
+      <!-- Botão Exportação Excel -->
+      <button class="btn btn-primary" id="btnExportXLSX">Exportar Excel (.xlsx)</button>
+    </div>
   </div>
 
+  <!-- Empty State (nenhum registro) -->
   <div id="relatorioEmpty" class="empty-state" style="display:none;">
-    <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
-    Nenhum registro ainda.<br>Vá até a página "Registrar" para lançar uma perda.
+    <div class="empty-icon">📦</div>
+    <strong>Nenhum registro ainda</strong><br>
+    <span class="empty-hint">Vá até a página "Registrar" para lançar uma perda.</span>
   </div>
 
+  <!-- Empty State Filtrado -->
+  <div id="relatorioEmptyFiltered" class="empty-state" style="display:none;">
+    <div class="empty-icon">🔍</div>
+    <strong>Nenhum registro encontrado</strong><br>
+    <span class="empty-hint">Tente ajustar os filtros ou clique para limpar</span>
+    <button class="btn btn-outline btn-sm" id="btnLimparFiltrosEmpty" style="margin-top:12px;">Limpar filtros</button>
+  </div>
+
+  <!-- Conteúdo Relatório -->
   <div id="relatorioContent">
     <div class="total-banner">
       <span class="lbl">Valor total</span>
       <span class="val" id="relTotValor">R$ 0,00</span>
     </div>
-
     <div id="relatorioGroups"></div>
   </div>
 </section>

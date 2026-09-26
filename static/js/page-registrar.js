@@ -120,8 +120,10 @@ const PageRegistrar = (function(){
       showFornecedorCard(false);
       setProdutoCardEnabled(true);
       updateFornecedorLine();
+      checkProdutoReady();
     } else {
       State.fornecedorAtual = '';
+      updateFornecedorLine();
       $('fornecedorInput').value = '';
       $('codigoProdutoInput').value = '';
       $('descInput').value = '';
@@ -131,11 +133,10 @@ const PageRegistrar = (function(){
       hint.textContent = 'Código novo — selecione o fornecedor e preencha os dados do produto';
       hint.className = 'lookup-hint new';
 
-      showFornecedorCard(true);
       setProdutoCardEnabled(false);
-      updateFornecedorLine();
+      showFornecedorCard(true);
+      checkProdutoReady();
     }
-    checkProdutoReady();
   }
 
   function updatePreview(){
@@ -176,25 +177,40 @@ const PageRegistrar = (function(){
     $('barcodeInput').focus();
   }
 
+  function resetFornecedor(){
+    // reseta só o fornecedor, mantém produto e perda
+    State.fornecedorAtual = '';
+    $('fornecedorInput').value = '';
+    updateFornecedorLine();
+    showFornecedorCard(true);
+    $('fornecedorInput').focus();
+  }
+
   async function salvarPerda(){
     if(!State.fornecedorAtual){ Utils.toast('Selecione um fornecedor.', 'error'); return; }
     const barcode = $('barcodeInput').value.trim();
     const codigoProduto = $('codigoProdutoInput').value.trim();
     const descricao = $('descInput').value.trim();
-    const valorUnit = parseFloat($('valorUnitInput').value);
+    const valorUnitRaw = $('valorUnitInput').value.trim().replace(',', '.'); // aceita vírgula ou ponto
+    const valorUnit = parseFloat(valorUnitRaw);
     const qtd = parseInt($('qtdInput').value);
     const ilegivel = $('ilegivelCheck').checked;
     const validadeInput = $('validadeInput').value;
     const validade = ilegivel ? 'ILEGÍVEL' : (validadeInput ? Utils.formatValidade(validadeInput) : '');
 
+    if(!barcode){ Utils.toast('Escaneie ou digite o código de barras.', 'error'); return; }
     if(!descricao){ Utils.toast('Informe a descrição do produto.', 'error'); return; }
     if(!tipoAtual){ Utils.toast('Selecione Vencido ou Avariado.', 'error'); return; }
-    if(!qtd || qtd < 1){ Utils.toast('Informe a quantidade.', 'error'); return; }
-    if(isNaN(valorUnit) || valorUnit < 0){ Utils.toast('Informe o preço de compra.', 'error'); return; }
+    if(!qtd || qtd < 1){ Utils.toast('Informe a quantidade (mínimo 1).', 'error'); return; }
+    if(isNaN(valorUnit) || valorUnit <= 0){ Utils.toast('Informe o preço de compra (maior que zero).', 'error'); return; }
     if(!validade){ Utils.toast("Informe a validade ou marque 'ilegível'.", 'error'); return; }
 
     const btn = $('btnSalvarPerda');
+    const btnText = btn.querySelector('.btn-text');
+    const btnSpinner = btn.querySelector('.btn-spinner');
     btn.disabled = true;
+    btnText.style.display = 'none';
+    btnSpinner.style.display = 'inline-flex';
     try{
       if($('salvarCatalogo').checked){
         await Api.upsertProduto({
@@ -214,6 +230,8 @@ const PageRegistrar = (function(){
       Utils.toast(e.message || 'Erro ao registrar a perda.', 'error');
     }finally{
       btn.disabled = false;
+      btnText.style.display = 'inline';
+      btnSpinner.style.display = 'none';
     }
   }
 
@@ -232,6 +250,13 @@ const PageRegistrar = (function(){
       $('fornecedorInput').focus();
     });
 
+    // desabilitar scroll wheel em inputs number
+    [$('qtdInput'), $('valorUnitInput')].forEach(input => {
+      input.addEventListener('wheel', (e) => {
+        e.preventDefault();
+      }, { passive: false });
+    });
+
     // fornecedor
     $('fornecedorInput').addEventListener('change', function(){
       const nome = this.value.trim();
@@ -241,9 +266,7 @@ const PageRegistrar = (function(){
       FornecedorModal.open((nome) => escolherFornecedor(nome));
     });
     $('btnTrocarForn').addEventListener('click', () => {
-      showFornecedorCard(true);
-      $('fornecedorInput').value = State.fornecedorAtual;
-      $('fornecedorInput').focus();
+      resetFornecedor();
     });
 
     // produto
@@ -252,7 +275,14 @@ const PageRegistrar = (function(){
     $('valorUnitInput').addEventListener('input', checkProdutoReady);
 
     // detalhes da perda
-    $('qtdInput').addEventListener('input', updatePreview);
+    $('qtdInput').addEventListener('input', function(){
+      // garante que quantidade nunca seja negativa ou zero na digitação
+      const val = parseInt(this.value);
+      if(val <= 0 || this.value === '') this.value = '1';
+      updatePreview();
+    });
+    $('qtdInput').addEventListener('change', updatePreview);
+    
     $('validadeInput').addEventListener('input', updatePreview);
 
     document.querySelectorAll('#page-registrar .toggle-btn').forEach(btn => {

@@ -110,3 +110,78 @@
   <button class="kebab-item" id="kebabEdit">Editar</button>
   <button class="kebab-item act-del" id="kebabDelete">Apagar</button>
 </div>
+
+
+<!-- ===================== MODAIS ===================== -->
+
+<!-- ---------- Modal: Adicionar Fornecedor ---------- -->
+<div id="fornecedorModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Adicionar fornecedor</h3>
+    <div class="field">
+      <label class="field-label">Nome do fornecedor</label>
+      <input type="text" id="fornModalInput" placeholder="Ex: Distribuidora XYZ">
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="btnCancelForn">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnSaveForn">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ---------- Modal: Scanner de Código de Barras ---------- -->
+<div id="scannerModal" class="modal-overlay">
+  <div class="modal-box">
+    <!-- Área de leitura da câmera -->
+    <div id="reader"></div>
+    
+    <!-- Hint de instrução -->
+    <div class="scan-hint">Aponte o código de barras para a câmera</div>
+    
+    <!-- Botões de controle na parte inferior -->
+    <div class="modal-actions">
+      <button type="button" id="btnTorchScan" class="btn-sm" title="Ligar/desligar lanterna">
+        💡
+      </button>
+      
+      <button type="button" id="btnGalleryScan" class="btn btn-outline" title="Ler da galeria">
+        🖼️ Galeria
+      </button>
+      
+      <button type="button" id="btnCancelScan" class="btn btn-outline" title="Cancelar leitura">
+        ✕ Cancelar
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== MENU KEBAB (3 pontos) ===================== -->
+<div id="kebabMenu" class="kebab-menu">
+  <button type="button" class="kebab-menu-item" id="kebabEdit">
+    <span class="kebab-icon">✎</span>
+    Editar
+  </button>
+  <button type="button" class="kebab-menu-item" id="kebabDelete">
+    <span class="kebab-icon">🗑</span>
+    Apagar
+  </button>
+</div>
+
+
+
+<!-- ===================== MODAL: Confirmar Deletar ===================== -->
+<div id="confirmDeleteModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Apagar Registro?</h3>
+    
+    <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin-bottom: 20px;">
+      Tem certeza que quer apagar esse registro? Essa ação <strong>não pode ser desfeita</strong>.
+    </p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="btnCancelDelete">Cancelar</button>
+      <button type="button" class="btn btn-danger" id="btnConfirmDelete">Apagar com Certeza</button>
+    </div>
+  </div>
+</div>

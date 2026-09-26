@@ -3,18 +3,45 @@
 <section id="page-registrar" class="page active">
   <div class="two-col">
     <div>
-
+ 
       <!-- ---------- leitura do produto (ação principal) ---------- -->
       <div class="panel panel-primary" id="scanCard">
         <h3 class="panel-title">Leitura do produto</h3>
 
         <label class="field-label">Código de barras</label>
         <div class="scan-row">
-          <input type="text" id="barcodeInput" class="mono-input" placeholder="Escaneie ou digite o código de barras" autofocus>
+          <input type="text" id="barcodeInput" class="mono-input" inputmode="numeric" placeholder="Escaneie ou digite o código de barras" autofocus>
           <button class="scan-btn" id="btnScan" title="Escanear código de barras">{{ icons.icon_barcode() }}</button>
         </div>
+        <div class="lookup-hint" id="scanStatusHint">Aponte a câmera ou digite o código de barras do produto.</div>
         
         <a href="#" class="link-inline" id="linkManualForn">Selecionar fornecedor manualmente</a>
+      </div>
+
+      <!-- ========== SCANNER MODAL ========== -->
+      <div id="scannerModal" class="modal-overlay">
+        <div class="modal-box">
+          <!-- Área de leitura da câmera -->
+          <div id="reader"></div>
+          
+          <!-- Hint de instrução -->
+          <div class="scan-hint">Aponte o código de barras para a câmera</div>
+          
+          <!-- Botões de controle na parte inferior -->
+          <div class="modal-actions">
+            <button type="button" id="btnTorchScan" class="btn-sm" title="Ligar/desligar lanterna">
+              💡
+            </button>
+            
+            <button type="button" id="btnGalleryScan" class="btn btn-outline" title="Ler da galeria">
+              🖼️ Galeria
+            </button>
+            
+            <button type="button" id="btnCancelScan" class="btn btn-outline" title="Cancelar leitura">
+              ✕ Cancelar
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- ---------- fornecedor (só aparece quando necessário) ---------- -->
@@ -33,7 +60,7 @@
         <button type="button" class="btn btn-outline btn-sm" id="btnAddFornRegistrar">+ Adicionar fornecedor novo</button>
       </div>
 
-      <!-- ---------- produto ---------- -->
+      <!-- ---------- produto descrição ---------- -->
       <div class="panel disabled-block" id="produtoCard">
         <h3 class="panel-title">Produto</h3>
 
@@ -55,7 +82,7 @@
 
         <div class="field">
           <label class="field-label">Preço de compra (R$)</label>
-          <input type="number" id="valorUnitInput" step="0.01" min="0" placeholder="0,00">
+          <input type="number" id="valorUnitInput" inputmode="decimal" step="0.01" min="0" placeholder="0,00">
         </div>
 
         <div class="checkbox-row">
@@ -64,6 +91,7 @@
         </div>
       </div>
 
+      <!-- --------- motivo da perda ---------- -->
       <div class="panel disabled-block" id="perdaCard">
         <h3 class="panel-title">Detalhes da perda</h3>
 
@@ -76,7 +104,7 @@
         <div class="field-row">
           <div class="field">
             <label class="field-label">Quantidade</label>
-            <input type="number" id="qtdInput" min="1" step="1" value="1">
+            <input type="number" id="qtdInput" inputmode="numeric" min="1" step="1" value="1">
           </div>
           <div class="field">
             <label class="field-label">Validade</label>
@@ -89,7 +117,15 @@
         </div>
       </div>
 
-      <button class="btn btn-primary btn-block" id="btnSalvarPerda">Registrar perda</button>
+      <button class="btn btn-primary btn-block" id="btnSalvarPerda">
+        <span class="btn-text">Registrar perda</span>
+        <span class="btn-spinner" style="display:none;">
+          <svg class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" opacity="0.2"></circle>
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="15.7 47.1" stroke-linecap="round"></circle>
+          </svg>
+        </span>
+      </button>
     </div>
 
     <!-- ---------- resumo lateral ---------- -->
@@ -108,3 +144,90 @@
     </div>
   </div>
 </section>
+
+<!-- ===================== MODAL: Editar Perda ===================== -->
+<div id="perdaModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Editar Registro de Perda</h3>
+
+    <!-- Fornecedor -->
+    <div class="field">
+      <label class="field-label">Fornecedor</label>
+      <input 
+        type="text" 
+        id="perdaModalForn" 
+        list="perdaModalFornDatalist" 
+        placeholder="Selecione o fornecedor…"
+      >
+      <datalist id="perdaModalFornDatalist"></datalist>
+    </div>
+
+    <!-- Descrição -->
+    <div class="field">
+      <label class="field-label">Descrição</label>
+      <input 
+        type="text" 
+        id="perdaModalDesc" 
+        placeholder="Ex: Leite integral 1L"
+      >
+    </div>
+
+    <!-- Código do Produto -->
+    <div class="field">
+      <label class="field-label">Código do Produto</label>
+      <input 
+        type="text" 
+        id="perdaModalCodigo" 
+        placeholder="Opcional"
+      >
+    </div>
+
+    <!-- Tipo: Vencido ou Avariado -->
+    <div class="field">
+      <label class="field-label">Motivo da Perda</label>
+      <div class="toggle-group">
+        <button type="button" class="toggle-btn" data-tipo="VENCIDO">Vencido</button>
+        <button type="button" class="toggle-btn" data-tipo="AVARIADO">Avariado</button>
+      </div>
+    </div>
+
+    <!-- Quantidade -->
+    <div class="field">
+      <label class="field-label">Quantidade</label>
+      <input 
+        type="number" 
+        id="perdaModalQtd" 
+        min="1" 
+        value="1" 
+        placeholder="1"
+      >
+    </div>
+
+    <!-- Validade -->
+    <div class="field">
+      <label class="field-label">Validade</label>
+      <input 
+        type="date" 
+        id="perdaModalValidade"
+      >
+    </div>
+
+    <!-- Valor Unitário -->
+    <div class="field">
+      <label class="field-label">Valor Unitário (R$)</label>
+      <input 
+        type="number" 
+        id="perdaModalValor" 
+        min="0" 
+        step="0.01" 
+        placeholder="0,00"
+      >
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="btnCancelPerda">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnSavePerda">Salvar</button>
+    </div>
+  </div>
+</div>
