@@ -23,10 +23,22 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+<!-- css -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+
+<!-- Componentes base (carregado em todas as páginas) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components-base.css') }}">
+
+<!-- Componentes específicos de cada página -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components-registrar.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components-relatorio.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components-rankings.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components-graficos.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/components-catalogo.css') }}">
+
+<!-- Resto dos arquivos -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/pages.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/utilities.css') }}">
 {% block head_extra %}{% endblock %}

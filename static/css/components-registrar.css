@@ -1,0 +1,285 @@
+/* ============================================================
+   COMPONENTES — Página: REGISTRAR
+   Scan, hints, fornecedor, toggle group, side preview
+   ============================================================ */
+
+/* ---------- scan input + button ---------- */
+.scan-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  margin-bottom: 8px;
+}
+
+.scan-row input {
+  flex: 1;
+}
+
+.scan-btn {
+  flex: 0 0 44px;
+  padding: 0;
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface-alt);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.scan-btn:hover {
+  border-color: var(--steel);
+  background: var(--steel-soft);
+  color: var(--steel);
+}
+
+.scan-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- toggle group (Vencido/Avariado) ---------- */
+.toggle-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 12px 10px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-body);
+  min-height: 44px;
+}
+
+.toggle-btn:hover {
+  border-color: var(--steel);
+}
+
+.toggle-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ---------- side preview ---------- */
+.side-preview{
+  background:var(--surface); 
+  border:1px solid var(--border); 
+  border-radius:var(--radius);
+  padding:22px; 
+  position:sticky; 
+  top:20px; 
+  box-shadow:var(--shadow-sm);
+}
+
+.side-preview h3{ 
+  font-family:var(--font-display); 
+  font-size:12.5px; 
+  letter-spacing:0.05em; 
+  text-transform:uppercase; 
+  color:var(--text-muted); 
+  margin-bottom:14px; 
+}
+
+.preview-row{ 
+  display:flex; 
+  justify-content:space-between; 
+  padding:9px 0; 
+  border-bottom:1px solid var(--border); 
+  font-size:13px; 
+}
+
+.preview-row:last-of-type{ 
+  border-bottom:none; 
+}
+
+.preview-row .k{ 
+  color:var(--text-muted); 
+}
+
+.preview-row .v{ 
+  font-weight:600; 
+  text-align:right; 
+  max-width:60%; 
+}
+
+.preview-row .v.mono{ 
+  font-family:var(--font-mono); 
+}
+
+/* ---------- total preview (lado direito) ---------- */
+.total-preview {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  margin-bottom: 16px;
+}
+
+/* ---------- spinner do botão ---------- */
+@keyframes spinner-rotate{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+.btn-spinner{
+  display:inline-flex;
+  align-items:center;
+  margin-left:8px;
+}
+
+.btn-spinner .spinner{
+  width:16px;
+  height:16px;
+  animation:spinner-rotate 1s linear infinite;
+}
+
+/* ---------- scan flash (animação de sucesso) ---------- */
+@keyframes scan-flash-animation{
+  0%, 100%{ background-color:transparent; }
+  50%{ background-color:rgba(46, 125, 79, 0.15); }
+}
+
+#scanCard.scan-flash{
+  animation:scan-flash-animation 0.45s ease-in-out;
+}
+
+/* ---------- page registrar específico ---------- */
+#page-registrar .two-col{ 
+  align-items:start; 
+}
+
+#produtoCard, #perdaCard{ 
+  transition:opacity .15s ease; 
+}
+
+.disabled-block{ 
+  opacity:0.4; 
+  pointer-events:none; 
+}
+
+.lookup-hint{
+  font-size:12px; 
+  padding:8px 10px; 
+  margin-top:6px; 
+  border-radius:4px;
+  color:var(--text-muted); 
+  background:var(--surface-alt);
+}
+
+.lookup-hint.found{
+  color:var(--success); 
+  background:var(--success-soft);
+}
+
+.lookup-hint.new{
+  color:#C98A1B; 
+  background:var(--accent-soft);
+}
+
+/* ---------- inputs no dark mode ---------- */
+[data-theme="dark"] input[type=text],
+[data-theme="dark"] input[type=number],
+[data-theme="dark"] input[type=date],
+[data-theme="dark"] select,
+[data-theme="dark"] textarea{
+  color:var(--text);
+  background-color:var(--surface);
+  border-color:var(--border);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder{
+  color:var(--text-faint);
+}
+
+/* remover spinners em inputs number */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* ---------- dark mode registrar ---------- */
+[data-theme="dark"] .side-preview{
+  background:var(--surface);
+  border-color:var(--border);
+}
+
+[data-theme="dark"] .side-preview h3{
+  color:var(--text-muted);
+}
+
+[data-theme="dark"] .preview-row{
+  border-bottom-color:var(--border);
+}
+
+[data-theme="dark"] .preview-row .k{
+  color:var(--text-muted);
+}
+
+[data-theme="dark"] .preview-row .v{
+  color:var(--text);
+}
+
+[data-theme="dark"] .lookup-hint{
+  background:var(--surface-alt);
+  color:var(--text-muted);
+}
+
+[data-theme="dark"] .lookup-hint.found{
+  background:var(--success-soft);
+  color:var(--success);
+}
+
+[data-theme="dark"] .lookup-hint.new{
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+
+[data-theme="dark"] .disabled-block{
+  opacity:0.35;
+}
+
+/* ---------- responsividade mobile ---------- */
+@media (pointer: coarse), (max-width: 900px){
+  .scan-btn{ flex-basis:54px; }
+}
+
+@media (max-width: 768px) {
+  .side-preview {
+    position: relative;
+    top: auto;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .side-preview {
+    padding: 16px;
+  }
+
+  .side-preview h3 {
+    font-size: 11px;
+  }
+
+  .preview-row {
+    font-size: 12px;
+    padding: 7px 0;
+  }
+}

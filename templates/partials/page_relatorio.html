@@ -1,65 +1,186 @@
-<!-- ===================== PÁGINA: RELATÓRIO (ATUALIZADO) ===================== -->
+<!-- ============================================================
+     PÁGINA: RELATÓRIO - ESTRUTURA HTML COMPLETA
+     Use exatamente assim, sem modificações
+     ============================================================ -->
+
 <section id="page-relatorio" class="page">
+  
+  <!-- ========== FILTROS ========== -->
   <div class="filters-bar">
+    <!-- LINHA 1: Pesquisa -->
     <div class="filters-row-1">
-      <!-- Busca Fornecedor -->
-      <div class="field w-280 mb-0">
-        <input type="text" id="filtroForn" list="filtroFornDatalist" placeholder="Fornecedor — pesquisar…">
+      <div class="field mb-0">
+        <input type="text" 
+               id="filtroForn" 
+               list="filtroFornDatalist" 
+               placeholder="Pesquisar fornecedor">
         <datalist id="filtroFornDatalist"></datalist>
       </div>
-
-      <!-- Busca Produto -->
-      <div class="field w-280 mb-0">
-        <input type="text" id="filtroProduto" placeholder="Produto — pesquisar…">
+      
+      <div class="field mb-0">
+        <input type="text" 
+               id="filtroProduto" 
+               placeholder="Pesquisar produto">
       </div>
-
-      <!-- Filtro Tipo -->
+    </div>
+    
+    <!-- LINHA 2: Filtros + Export -->
+    <div class="filters-row-2">
       <select id="filtroTipo">
-        <option value="">Vencido &amp; Avariado</option>
+        <option value="">Vencido e Avariados</option>
         <option value="VENCIDO">Só vencidos</option>
         <option value="AVARIADO">Só avariados</option>
       </select>
-
-      <!-- Filtro Data Range -->
+      
       <div class="filter-date-range">
-        <input type="date" id="filtroDataDe" title="De" placeholder="De">
+        <input type="date" id="filtroDataDe" placeholder="De">
         <span class="filter-date-separator">—</span>
-        <input type="date" id="filtroDataAte" title="Até" placeholder="Até">
+        <input type="date" id="filtroDataAte" placeholder="Até">
       </div>
+      
+      <button class="btn btn-primary" id="btnExportXLSX">Export Excel</button>
     </div>
-
-    <div class="filters-row-2">
-      <!-- Botão Limpar Filtros -->
-      <button class="btn btn-outline btn-sm" id="btnLimparFiltros" style="display:none;">Limpar filtros</button>
-
-      <div class="flex-1"></div>
-
-      <!-- Botão Exportação Excel -->
-      <button class="btn btn-primary" id="btnExportXLSX">Exportar Excel (.xlsx)</button>
-    </div>
+    
+    <!-- Botão limpar (aparece só com filtro ativo) -->
+    <button class="btn btn-outline btn-sm" id="btnLimparFiltros" style="display:none;">
+      Limpar filtros
+    </button>
   </div>
 
-  <!-- Empty State (nenhum registro) -->
+  <!-- ========== EMPTY STATES ========== -->
+  
+  <!-- Quando não tem nenhum registro -->
   <div id="relatorioEmpty" class="empty-state" style="display:none;">
     <div class="empty-icon">📦</div>
     <strong>Nenhum registro ainda</strong><br>
     <span class="empty-hint">Vá até a página "Registrar" para lançar uma perda.</span>
   </div>
 
-  <!-- Empty State Filtrado -->
+  <!-- Quando tem registros mas filtro retornou vazio -->
   <div id="relatorioEmptyFiltered" class="empty-state" style="display:none;">
     <div class="empty-icon">🔍</div>
     <strong>Nenhum registro encontrado</strong><br>
     <span class="empty-hint">Tente ajustar os filtros ou clique para limpar</span>
-    <button class="btn btn-outline btn-sm" id="btnLimparFiltrosEmpty" style="margin-top:12px;">Limpar filtros</button>
+    <button class="btn btn-outline btn-sm" id="btnLimparFiltrosEmpty" style="margin-top:12px;">
+      Limpar filtros
+    </button>
   </div>
 
-  <!-- Conteúdo Relatório -->
+  <!-- ========== CONTEÚDO PRINCIPAL ========== -->
   <div id="relatorioContent">
+    
+    <!-- Total Banner -->
     <div class="total-banner">
       <span class="lbl">Valor total</span>
       <span class="val" id="relTotValor">R$ 0,00</span>
     </div>
+    
+    <!-- Grupos (agrupado por fornecedor) -->
     <div id="relatorioGroups"></div>
+    
   </div>
+
+  <!-- ========== KEBAB MENU (GLOBAL) ========== -->
+  <div class="kebab-menu" id="kebabMenu">
+    <button class="kebab-menu-item" id="kebabEdit">
+      Editar
+    </button>
+    <button class="kebab-menu-item" id="kebabDelete">
+      Deletar
+    </button>
+  </div>
+
+  <!-- ========== MODAL: EDITAR REGISTRO ========== -->
+  <div class="modal" id="perdaModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Editar Registro</h2>
+      </div>
+      
+      <div class="modal-body">
+        
+        <div class="field">
+          <label>Fornecedor *</label>
+          <input type="text" 
+                 id="perdaModalForn" 
+                 list="perdaModalFornDatalist" 
+                 placeholder="Digite ou selecione">
+          <datalist id="perdaModalFornDatalist"></datalist>
+        </div>
+        
+        <div class="field">
+          <label>Descrição *</label>
+          <input type="text" 
+                 id="perdaModalDesc" 
+                 placeholder="Ex: Arroz 5kg">
+        </div>
+        
+        <div class="field">
+          <label>Código</label>
+          <input type="text" 
+                 id="perdaModalCodigo" 
+                 placeholder="SKU ou código">
+        </div>
+        
+        <div class="field">
+          <label>Status *</label>
+          <div class="toggle-group">
+            <button type="button" class="toggle-btn" data-tipo="VENCIDO">
+              Vencido
+            </button>
+            <button type="button" class="toggle-btn" data-tipo="AVARIADO">
+              Avariado
+            </button>
+          </div>
+        </div>
+        
+        <div class="field">
+          <label>Quantidade *</label>
+          <input type="number" 
+                 id="perdaModalQtd" 
+                 min="1" 
+                 placeholder="Ex: 10">
+        </div>
+        
+        <div class="field">
+          <label>Validade *</label>
+          <input type="date" id="perdaModalValidade">
+        </div>
+        
+        <div class="field">
+          <label>Valor Unitário *</label>
+          <input type="number" 
+                 id="perdaModalValor" 
+                 step="0.01" 
+                 min="0" 
+                 placeholder="Ex: 10.50">
+        </div>
+        
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelPerda">Cancelar</button>
+        <button class="btn btn-primary" id="btnSavePerda">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MODAL: CONFIRMAÇÃO DELETE ========== -->
+  <div class="modal" id="confirmDeleteModal">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2>Confirmar Exclusão</h2>
+      </div>
+      
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.</p>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelDelete">Cancelar</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Excluir</button>
+      </div>
+    </div>
+  </div>
+
 </section>

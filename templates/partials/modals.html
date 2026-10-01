@@ -157,15 +157,19 @@
 
 
 <!-- ===================== MENU KEBAB (3 pontos) ===================== -->
-<div id="kebabMenu" class="kebab-menu">
-  <button type="button" class="kebab-menu-item" id="kebabEdit">
-    <span class="kebab-icon">✎</span>
-    Editar
-  </button>
-  <button type="button" class="kebab-menu-item" id="kebabDelete">
-    <span class="kebab-icon">🗑</span>
-    Apagar
-  </button>
+<div class="kebab-wrapper" style="position: relative; display: inline-block;">
+  <button class="kebab-btn" id="kebabBtn-{id}">⋮</button>
+  
+  <div class="kebab-menu" id="kebabMenu-{id}">
+    <button class="kebab-menu-item" id="kebabEdit-{id}">
+      <span class="kebab-icon">✏️</span>
+      Editar
+    </button>
+    <button class="kebab-menu-item" id="kebabDelete-{id}">
+      <span class="kebab-icon">🗑️</span>
+      Deletar
+    </button>
+  </div>
 </div>
 
 
