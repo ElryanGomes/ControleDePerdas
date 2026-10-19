@@ -1,36 +1,92 @@
 <!-- ===================== PÁGINA: CATÁLOGO ===================== -->
 <section id="page-catalogo" class="page">
-  <div class="catalogo-toolbar">
-    <div class="toolbar-row">
-      <select id="catFiltroForn"><option value="">Todos os fornecedores</option></select>
-      <input type="text" id="catBusca" class="w-280" placeholder="Pesquisar por descrição ou código de barras…">
+
+  <!-- abas -->
+  <div class="cat-tabs" role="tablist" aria-label="Catálogo">
+    <button type="button" class="cat-tab active" role="tab" aria-selected="true" data-tab="produtos">
+      Produtos <span class="cat-tab-count" id="catCountProdutos">0</span>
+    </button>
+    <button type="button" class="cat-tab" role="tab" aria-selected="false" data-tab="fornecedores">
+      Fornecedores <span class="cat-tab-count" id="catCountForn">0</span>
+    </button>
+  </div>
+
+  <!-- ===================== ABA: PRODUTOS ===================== -->
+  <div id="catPanelProdutos" class="cat-panel" role="tabpanel">
+    <div class="cat-toolbar">
+      <div class="cat-filters">
+        <select id="catFiltroForn" aria-label="Filtrar por fornecedor">
+          <option value="">Todos os fornecedores</option>
+        </select>
+        <div class="cat-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="catBusca" placeholder="Buscar por descrição ou código…" autocomplete="off">
+        </div>
+      </div>
+      <div class="cat-toolbar-actions">
+        <button type="button" class="btn btn-primary" id="btnNovoProduto">+ Novo produto</button>
+      </div>
     </div>
-    <div class="toolbar-row">
-      <button class="btn btn-outline" id="btnNovoFornecedor">+ Novo fornecedor</button>
-      <button class="btn btn-primary" id="btnNovoProduto">+ Novo produto</button>
+
+    <div class="cat-resumo" id="catResumo"></div>
+
+    <div id="catalogoEmpty" class="catalogo-empty" style="display:none;">
+      <strong id="catalogoEmptyTitulo">Nenhum produto cadastrado</strong>
+      <span class="catalogo-empty-hint" id="catalogoEmptyHint">Cadastre um fornecedor e depois adicione os produtos dele.</span>
+    </div>
+
+    <div class="cat-table-wrap" id="catalogoTableWrap">
+      <div class="cat-table-scroll">
+        <table class="cat-table">
+          <thead>
+            <tr>
+              <th>Fornecedor</th>
+              <th>Cód. produto</th>
+              <th>Cód. de barras</th>
+              <th>Descrição</th>
+              <th class="num">Preço de compra</th>
+              <th><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody id="catalogoTbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div id="catalogoEmpty" class="empty-state" style="display:none;">
-    <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
-    Nenhum fornecedor ou produto cadastrado ainda.
-  </div>
+  <!-- ===================== ABA: FORNECEDORES ===================== -->
+  <div id="catPanelFornecedores" class="cat-panel" role="tabpanel" hidden>
+    <div class="cat-toolbar">
+      <div class="cat-filters">
+        <div class="cat-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="catBuscaForn" placeholder="Buscar fornecedor…" autocomplete="off">
+        </div>
+      </div>
+      <div class="cat-toolbar-actions">
+        <button type="button" class="btn btn-primary" id="btnNovoFornecedor">+ Novo fornecedor</button>
+      </div>
+    </div>
 
-  <div class="panel pad-0" id="catalogoTableWrap">
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Fornecedor</th>
-            <th>Código produto</th>
-            <th>Código de barras</th>
-            <th>Descrição</th>
-            <th class="num">Preço de compra</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="catalogoTbody"></tbody>
-      </table>
+    <div id="fornecedoresEmpty" class="catalogo-empty" style="display:none;">
+      <strong id="fornecedoresEmptyTitulo">Nenhum fornecedor cadastrado</strong>
+      <span class="catalogo-empty-hint" id="fornecedoresEmptyHint">Clique em “Novo fornecedor” para começar.</span>
+    </div>
+
+    <div class="cat-table-wrap" id="fornecedoresTableWrap">
+      <div class="cat-table-scroll">
+        <table class="cat-table">
+          <thead>
+            <tr>
+              <th>Fornecedor</th>
+              <th class="num">Produtos</th>
+              <th><span class="sr-only">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody id="fornecedoresTbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
+
 </section>

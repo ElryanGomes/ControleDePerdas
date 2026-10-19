@@ -7,12 +7,15 @@ Rodar:
 
 Não apaga nada que já existe: produtos são criados/atualizados por
 código de barras, e novas perdas são sempre adicionadas.
+
+Sistema mensal: cada perda recebe o mes_ref do mês em que foi "registrada".
+Os meses anteriores ao mês aberto ficam FECHADOS e o mais recente fica ABERTO.
 """
 import random
 from datetime import datetime, timedelta
 
-from app import app, db
-from models import Fornecedor, Produto, Perda
+from app import app, db, migrar_banco, mes_aberto
+from models import Fornecedor, Produto, Perda, mes_ref_de
 
 # fornecedor -> [(codigo_produto, codigo_barra, descricao, valor_unit), ...]
 FORNECEDORES = {
@@ -45,7 +48,8 @@ def data_br(dt):
 
 def run():
     with app.app_context():
-        db.create_all()
+        migrar_banco()  # garante coluna mes_ref e um mês aberto
+        aberto = mes_aberto()
 
         produtos_por_forn = {}
         for nome_forn, produtos in FORNECEDORES.items():
@@ -92,7 +96,11 @@ def run():
                     validade_dt = data_registro + timedelta(days=random.randint(-20, 200))
                     validade = data_br(validade_dt) if random.random() > 0.08 else "ILEGÍVEL"
 
+                    ref = mes_ref_de(data_registro)
+                    if aberto and ref > aberto.ref:
+                        ref = aberto.ref  # nunca cria perda em mês depois do aberto
                     perda = Perda(
+                        mes_ref=ref,
                         fornecedor=nome_forn,
                         descricao=descricao,
                         codigo=codigo_produto,
@@ -107,6 +115,7 @@ def run():
                     criadas += 1
 
         db.session.commit()
+        migrar_banco()  # cria os meses que apareceram (anteriores ao aberto ficam fechados)
         total_produtos = sum(len(v) for v in FORNECEDORES.values())
         print(f"Seed concluído: {len(FORNECEDORES)} fornecedores, "
               f"{total_produtos} produtos, {criadas} perdas fictícias.")

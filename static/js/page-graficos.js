@@ -23,15 +23,15 @@ const PageGraficos = (function(){
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   }
 
-  function mesKey(isoData){
-    const d = new Date(isoData);
-    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  // janela de N meses terminando no mês aberto (o mais recente com lançamentos)
+  function janelaMeses(n){
+    return Meses.janela(State.mesAberto || Meses.refAtual(), n);
   }
 
+  // usa o mês de referência gravado no banco (sem new Date → sem erro de fuso)
   function perdasNoPeriodo(nMeses){
-    const now = new Date();
-    const cutoff = new Date(now.getFullYear(), now.getMonth() - (nMeses - 1), 1);
-    return State.perdas.filter(p => new Date(p.data) >= cutoff);
+    const keys = new Set(janelaMeses(nMeses).map(m => m.key));
+    return State.perdasTodas.filter(p => keys.has(p.mesRef));
   }
 
   /* ---------- construtores de dataset ---------- */
@@ -39,7 +39,7 @@ const PageGraficos = (function(){
     const valores = meses.map(() => 0);
     perdasNoPeriodo(meses.length).forEach(p => {
       if(p.tipo !== cfg.tipo) return;
-      const idx = meses.findIndex(m => m.key === mesKey(p.data));
+      const idx = meses.findIndex(m => m.key === p.mesRef);
       if(idx >= 0) valores[idx] += p[cfg.campo];
     });
     const cor = cfg.tipo === 'VENCIDO' ? cssVar('--vencido') : cssVar('--avariado');
@@ -52,7 +52,7 @@ const PageGraficos = (function(){
   function dadosMensalComparacao(cfg, meses){
     const vencido = meses.map(() => 0), avariado = meses.map(() => 0);
     perdasNoPeriodo(meses.length).forEach(p => {
-      const idx = meses.findIndex(m => m.key === mesKey(p.data));
+      const idx = meses.findIndex(m => m.key === p.mesRef);
       if(idx < 0) return;
       (p.tipo === 'VENCIDO' ? vencido : avariado)[idx] += p[cfg.campo];
     });
@@ -99,7 +99,7 @@ const PageGraficos = (function(){
 
   function construirGrafico(metricKey, nMeses){
     const cfg = METRICS[metricKey];
-    const meses = Utils.ultimosMeses(nMeses);
+    const meses = janelaMeses(nMeses);
     const isMoney = cfg.campo === 'valorTotal';
 
     let data;
@@ -114,7 +114,7 @@ const PageGraficos = (function(){
 
   /* ---------- render ---------- */
   function render(){
-    if(State.perdas.length === 0){
+    if(State.perdasTodas.length === 0){
       $('graficoEmpty').style.display = 'block';
       $('graficoWrap').style.display = 'none';
       return;
@@ -171,5 +171,11 @@ const PageGraficos = (function(){
     if(document.getElementById('page-graficos')?.classList.contains('active')) render();
   });
 
-  return { refresh: render };
+  // o Gráficos é global: sempre carrega todos os meses
+  async function refresh(){
+    await State.reloadPerdasTodas();
+    render();
+  }
+
+  return { refresh };
 })();

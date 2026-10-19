@@ -12,8 +12,7 @@ const PageRegistrar = (function(){
 
   /* ---------- fornecedores mais usados (para os balões de acesso rápido) ---------- */
   function fornecedoresMaisUsados(limit = 6){
-    const perdaCount = {};
-    State.perdas.forEach(p => { perdaCount[p.fornecedor] = (perdaCount[p.fornecedor] || 0) + 1; });
+    const perdaCount = State.usoFornecedores || {}; // nº de perdas por fornecedor (todos os meses)
     return State.fornecedoresList()
       .map(f => ({ nome: f, score: (perdaCount[f] || 0) * 10 + (State.catalogo[f] || []).length }))
       .sort((a, b) => b.score - a.score)
@@ -303,7 +302,23 @@ const PageRegistrar = (function(){
     $('btnSalvarPerda').addEventListener('click', salvarPerda);
   }
 
+  // faixa "Registrando em Out/2026" no topo da página
+  function renderMesRegistro(){
+    const sec = $('page-registrar');
+    if(!sec) return;
+    let el = $('mesRegistrando');
+    if(!el){
+      el = document.createElement('div');
+      el.id = 'mesRegistrando';
+      el.className = 'mes-banner';
+      sec.insertBefore(el, sec.firstChild);
+    }
+    el.hidden = !State.mesAberto;
+    if(State.mesAberto) el.innerHTML = 'Registrando em <strong>' + Meses.label(State.mesAberto) + '</strong>';
+  }
+
   function refresh(){
+    renderMesRegistro();
     resetForm();
   }
 

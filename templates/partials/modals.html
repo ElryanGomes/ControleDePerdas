@@ -1,23 +1,33 @@
-<!-- ===================== MODAL: SCANNER ===================== -->
+<!-- ============================================================
+     MODAIS — cada id aparece UMA vez só.
+     (antes havia fornecedorModal e scannerModal duplicados)
+     ============================================================ -->
+
+<!-- ===================== MODAL: SCANNER DE CÓDIGO DE BARRAS ===================== -->
 <div id="scannerModal" class="modal-overlay">
   <div class="modal-box">
     <div id="reader"></div>
-    <div class="scan-hint">Aponte a câmera para o código de barras</div>
-    <button class="btn btn-outline btn-block" id="btnCancelScan">Cancelar</button>
+    <div class="scan-hint">Aponte o código de barras para a câmera</div>
+    <div class="modal-actions">
+      <button type="button" id="btnTorchScan" class="btn-sm" title="Ligar/desligar lanterna">💡</button>
+      <button type="button" id="btnGalleryScan" class="btn btn-outline" title="Ler da galeria">🖼️ Galeria</button>
+      <button type="button" id="btnCancelScan" class="btn btn-outline" title="Cancelar leitura">✕ Cancelar</button>
+    </div>
   </div>
 </div>
 
-<!-- ===================== MODAL: NOVO FORNECEDOR ===================== -->
+<!-- ===================== MODAL: FORNECEDOR (novo / editar) ===================== -->
 <div id="fornecedorModal" class="modal-overlay">
   <div class="modal-box">
-    <h3>Novo fornecedor</h3>
+    <h3 id="fornModalTitle">Novo fornecedor</h3>
     <div class="field">
-      <label class="field-label">Nome do fornecedor</label>
-      <input type="text" id="fornModalInput" placeholder="Ex: M DIAS BRANCO">
+      <label class="field-label" for="fornModalInput">Nome do fornecedor</label>
+      <input type="text" id="fornModalInput" placeholder="Ex: M DIAS BRANCO" autocomplete="off">
+      <span class="field-hint" id="fornModalHint" style="display:none;">O novo nome vale para todos os produtos deste fornecedor.</span>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-outline" id="btnCancelForn">Cancelar</button>
-      <button class="btn btn-primary" id="btnSaveForn">Salvar</button>
+      <button type="button" class="btn btn-outline" id="btnCancelForn">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnSaveForn">Salvar</button>
     </div>
   </div>
 </div>
@@ -26,30 +36,37 @@
 <div id="produtoModal" class="modal-overlay">
   <div class="modal-box">
     <h3 id="prodModalTitle">Novo produto</h3>
+
     <div class="field">
-      <label class="field-label">Fornecedor</label>
+      <label class="field-label" for="prodModalForn">Fornecedor</label>
       <select id="prodModalForn"></select>
     </div>
+
     <div class="field">
-      <label class="field-label">Código do produto</label>
-      <input type="text" id="prodModalCodProd" class="mono-input">
+      <label class="field-label" for="prodModalDesc">Descrição</label>
+      <input type="text" id="prodModalDesc" autocomplete="off">
     </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="prodModalCodProd">Código do produto</label>
+        <input type="text" id="prodModalCodProd" class="mono-input" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label" for="prodModalCodBarra">Código de barras</label>
+        <input type="text" id="prodModalCodBarra" class="mono-input" inputmode="numeric" autocomplete="off">
+      </div>
+    </div>
+
     <div class="field">
-      <label class="field-label">Código de barras</label>
-      <input type="text" id="prodModalCodBarra" class="mono-input">
+      <label class="field-label" for="prodModalValor">Preço de compra (R$)</label>
+      <input type="text" id="prodModalValor" inputmode="decimal" placeholder="0,00" autocomplete="off">
     </div>
-    <div class="field">
-      <label class="field-label">Descrição</label>
-      <input type="text" id="prodModalDesc">
-    </div>
-    <div class="field">
-      <label class="field-label">Preço de compra (R$)</label>
-      <input type="number" id="prodModalValor" step="0.01" min="0">
-    </div>
+
     <div class="modal-actions">
-      <button class="btn btn-danger" id="btnDeleteProd" style="display:none;">Excluir</button>
-      <button class="btn btn-outline" id="btnCancelProd">Cancelar</button>
-      <button class="btn btn-primary" id="btnSaveProd">Salvar</button>
+      <button type="button" class="btn btn-danger" id="btnDeleteProd" style="display:none;">Apagar</button>
+      <button type="button" class="btn btn-outline" id="btnCancelProd">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnSaveProd">Salvar</button>
     </div>
   </div>
 </div>
@@ -106,86 +123,57 @@
   </div>
 </div>
 
+<!-- ===================== MENU KEBAB (Relatório) ===================== -->
 <div id="kebabMenu" class="kebab-menu">
   <button class="kebab-item" id="kebabEdit">Editar</button>
   <button class="kebab-item act-del" id="kebabDelete">Apagar</button>
 </div>
 
-
-<!-- ===================== MODAIS ===================== -->
-
-<!-- ---------- Modal: Adicionar Fornecedor ---------- -->
-<div id="fornecedorModal" class="modal-overlay">
-  <div class="modal-box">
-    <h3>Adicionar fornecedor</h3>
-    <div class="field">
-      <label class="field-label">Nome do fornecedor</label>
-      <input type="text" id="fornModalInput" placeholder="Ex: Distribuidora XYZ">
-    </div>
-    <div class="modal-actions">
-      <button type="button" class="btn btn-outline" id="btnCancelForn">Cancelar</button>
-      <button type="button" class="btn btn-primary" id="btnSaveForn">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ---------- Modal: Scanner de Código de Barras ---------- -->
-<div id="scannerModal" class="modal-overlay">
-  <div class="modal-box">
-    <!-- Área de leitura da câmera -->
-    <div id="reader"></div>
-    
-    <!-- Hint de instrução -->
-    <div class="scan-hint">Aponte o código de barras para a câmera</div>
-    
-    <!-- Botões de controle na parte inferior -->
-    <div class="modal-actions">
-      <button type="button" id="btnTorchScan" class="btn-sm" title="Ligar/desligar lanterna">
-        💡
-      </button>
-      
-      <button type="button" id="btnGalleryScan" class="btn btn-outline" title="Ler da galeria">
-        🖼️ Galeria
-      </button>
-      
-      <button type="button" id="btnCancelScan" class="btn btn-outline" title="Cancelar leitura">
-        ✕ Cancelar
-      </button>
-    </div>
-  </div>
-</div>
-
-
-<!-- ===================== MENU KEBAB (3 pontos) ===================== -->
-<div class="kebab-wrapper" style="position: relative; display: inline-block;">
-  <button class="kebab-btn" id="kebabBtn-{id}">⋮</button>
-  
-  <div class="kebab-menu" id="kebabMenu-{id}">
-    <button class="kebab-menu-item" id="kebabEdit-{id}">
-      <span class="kebab-icon">✏️</span>
-      Editar
-    </button>
-    <button class="kebab-menu-item" id="kebabDelete-{id}">
-      <span class="kebab-icon">🗑️</span>
-      Deletar
-    </button>
-  </div>
-</div>
-
-
-
-<!-- ===================== MODAL: Confirmar Deletar ===================== -->
+<!-- ===================== MODAL: CONFIRMAR APAGAR REGISTRO (Relatório) ===================== -->
 <div id="confirmDeleteModal" class="modal-overlay">
   <div class="modal-box">
-    <h3>Apagar Registro?</h3>
-    
-    <p style="color: var(--text-muted); font-size: 13.5px; line-height: 1.5; margin-bottom: 20px;">
+    <h3>Apagar registro?</h3>
+    <p class="confirm-msg">
       Tem certeza que quer apagar esse registro? Essa ação <strong>não pode ser desfeita</strong>.
     </p>
-
     <div class="modal-actions">
       <button type="button" class="btn btn-outline" id="btnCancelDelete">Cancelar</button>
-      <button type="button" class="btn btn-danger" id="btnConfirmDelete">Apagar com Certeza</button>
+      <button type="button" class="btn btn-danger" id="btnConfirmDelete">Apagar com certeza</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: CONFIRMAÇÃO GENÉRICA (Catálogo) =====================
+     Controlado por ConfirmModal.ask() em modals.js -->
+<div id="confirmModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 id="confirmModalTitle">Confirmar</h3>
+    <p class="confirm-msg" id="confirmModalMsg"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="btnConfirmModalCancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnConfirmModalOk">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: FECHAR MÊS ===================== -->
+<div id="fecharMesModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3 id="fmTitulo">Fechar mês</h3>
+
+    <div class="fm-resumo" id="fmResumo"></div>
+
+    <p class="fm-aviso">
+      Depois de fechar, os registros deste mês ficam <strong>somente para leitura</strong>
+      e o próximo mês começa vazio. Nada é apagado — você continua vendo o mês fechado
+      no seletor de mês do Relatório e dos Rankings.
+    </p>
+
+    <button type="button" class="btn btn-outline btn-block" id="btnFmExport">Exportar Excel do mês</button>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="btnFmCancel">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnFmConfirm">Fechar mês</button>
     </div>
   </div>
 </div>

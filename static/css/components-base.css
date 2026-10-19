@@ -403,111 +403,78 @@
   text-decoration: underline;
 }
 
-/* ---------- toast ---------- */
+/* ---------- toast ----------
+   O Utils.toast() escreve dentro de #toast:
+     <span class="toast-icon"><svg/></span><span class="toast-msg"></span>
+   e usa as classes toast-success | toast-error | toast-info + .show.
+   Sem .show ele fica invisível (antes o ícone ficava solto, enorme, no fim da tela). */
 #toast {
   position: fixed;
-  bottom: 20px;
   right: 20px;
+  bottom: 20px;
   z-index: 2000;
-  pointer-events: none;
-}
-
-.toast {
   display: flex;
   align-items: center;
   gap: 12px;
+  max-width: 360px;
+  padding: 14px 18px;
   background: var(--surface);
+  color: var(--text);
   border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  padding: 14px 18px;
   box-shadow: var(--shadow-md);
-  margin-bottom: 10px;
-  animation: slideInRight 0.3s ease;
-  pointer-events: all;
-  max-width: 360px;
-}
-
-.toast.success {
-  border-color: var(--success);
-  background: var(--success-soft);
-}
-
-.toast.success::before {
-  content: "✓";
-  color: var(--success);
-  font-weight: 700;
-  font-size: 16px;
-  flex: 0 0 auto;
-}
-
-.toast.error {
-  border-color: var(--danger);
-  background: var(--danger-soft);
-}
-
-.toast.error::before {
-  content: "!";
-  color: var(--danger);
-  font-weight: 700;
-  font-size: 16px;
-  flex: 0 0 auto;
-}
-
-.toast.warning {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-}
-
-.toast.warning::before {
-  content: "⚠";
-  color: var(--accent);
-  font-size: 14px;
-  flex: 0 0 auto;
-}
-
-.toast.info {
-  border-color: var(--steel);
-  background: var(--steel-soft);
-}
-
-.toast.info::before {
-  content: "ℹ";
-  color: var(--steel);
-  font-weight: 700;
-  font-size: 14px;
-  flex: 0 0 auto;
-}
-
-.toast-message {
-  flex: 1;
   font-size: 13px;
-  color: var(--text);
   line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s;
 }
 
-@keyframes slideInRight {
-  from {
-    transform: translateX(400px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+#toast:empty { display: none; }
+
+#toast.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
-.toast.hide {
-  animation: slideOutRight 0.3s ease forwards;
+#toast .toast-icon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--steel);
+  color: #fff;
 }
 
-@keyframes slideOutRight {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(400px);
-    opacity: 0;
+#toast .toast-icon svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+
+#toast .toast-msg { flex: 1; min-width: 0; }
+
+#toast.toast-success { border-color: var(--success); background: var(--success-soft); }
+#toast.toast-success .toast-icon { background: var(--success); }
+
+#toast.toast-error { border-color: var(--danger); background: var(--danger-soft); }
+#toast.toast-error .toast-icon { background: var(--danger); }
+
+#toast.toast-info { border-color: var(--steel); background: var(--steel-soft); }
+#toast.toast-info .toast-icon { background: var(--steel); }
+
+@media (max-width: 480px) {
+  #toast {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
   }
 }
 

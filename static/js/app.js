@@ -7,12 +7,18 @@
   const PAGE_META = {
     registrar: { title: 'Registrar perda', sub: 'Lance um item vencido ou avariado no controle.' },
     relatorio: { title: 'Relatório', sub: 'Todos os registros, prontos para exportar para o RH.' },
-    rankings:  { title: 'Rankings', sub: 'Panorama das perdas por período, fornecedor e produto.' },
+    rankings:  { title: 'Rankings', sub: 'Panorama das perdas por mês, fornecedor e produto.' },
     graficos:  { title: 'Gráficos', sub: 'Visualize as perdas em colunas, por período, tipo ou fornecedor.' },
     catalogo:  { title: 'Catálogo', sub: 'Fornecedores e produtos salvos para preencher mais rápido.' }
   };
 
+  let currentPage = 'registrar';
+  let navToken = 0; // evita que uma carga lenta sobrescreva uma navegação mais nova
+
   async function goTo(pageId){
+    const token = ++navToken;
+    currentPage = pageId;
+
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.page === pageId));
     document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + pageId));
     document.getElementById('pageTitle').textContent = PAGE_META[pageId].title;
@@ -20,9 +26,13 @@
 
     // esqueleto de carregamento imediato, enquanto aguarda o backend responder
     if(pageId === 'relatorio') PageRelatorio.showSkeleton();
+    if(pageId === 'rankings')  PageRankings.showSkeleton();
     if(pageId === 'catalogo')  PageCatalogo.showSkeleton();
 
     await State.reloadAll();
+    if(token !== navToken) return;
+
+    Meses.renderChip();
 
     if(pageId === 'registrar') PageRegistrar.refresh();
     if(pageId === 'relatorio') PageRelatorio.refresh();
@@ -30,6 +40,8 @@
     if(pageId === 'graficos')  PageGraficos.refresh();
     if(pageId === 'catalogo')  PageCatalogo.refresh();
   }
+
+  window.App = { goTo, current: () => currentPage };
 
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => goTo(btn.dataset.page));

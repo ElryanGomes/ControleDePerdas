@@ -4,6 +4,13 @@
      ============================================================ -->
 
 <section id="page-relatorio" class="page">
+
+  <!-- ========== MÊS ========== -->
+  <div class="mes-toolbar">
+    <label class="mes-toolbar-label" for="relMesSelect">Mês</label>
+    <div class="mes-select-wrap"><select id="relMesSelect" class="mes-select"></select></div>
+  </div>
+  <div id="relMesBanner" class="mes-banner readonly" hidden></div>
   
   <!-- ========== FILTROS ========== -->
   <div class="filters-bar">
@@ -144,7 +151,7 @@
         
         <div class="field">
           <label>Validade *</label>
-          <input type="date" id="perdaModalValidade">
+          <input type="text" id="perdaModalValidade" placeholder="DD/MM/AAAA ou ILEGÍVEL" maxlength="10" autocomplete="off">
         </div>
         
         <div class="field">

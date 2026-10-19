@@ -1,53 +1,107 @@
 <!-- ===================== PÁGINA: RANKINGS ===================== -->
 <section id="page-rankings" class="page">
-  <div id="rankEmpty" class="empty-state" style="display:none;">
-    <div class="barmini-big"><span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span><span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span></div>
-    Ainda não há dados suficientes.<br>Registre algumas perdas para ver os rankings.
-  </div>
 
-  <div id="rankContent">
-    <div class="summary-grid">
-      <div class="summary-card VENCIDO">
-        <div class="lbl">Vencido</div>
-        <div class="val" id="sumVencidoValor">R$ 0,00</div>
-        <div class="sub" id="sumVencidoQtd">0 itens</div>
-      </div>
-      <div class="summary-card AVARIADO">
-        <div class="lbl">Avariado</div>
-        <div class="val" id="sumAvariadoValor">R$ 0,00</div>
-        <div class="sub" id="sumAvariadoQtd">0 itens</div>
-      </div>
-      <div class="summary-card GERAL">
-        <div class="lbl">Total geral</div>
-        <div class="val" id="sumGeralValor">R$ 0,00</div>
-        <div class="sub" id="sumGeralQtd">0 itens</div>
-      </div>
+  <!-- mês + métrica (sempre visíveis) -->
+  <div class="rk-head">
+    <div class="mes-toolbar">
+      <label class="mes-toolbar-label" for="rankMesSelect">Mês</label>
+      <div class="mes-select-wrap"><select id="rankMesSelect" class="mes-select"></select></div>
     </div>
-
-    <div class="metric-toggle">
+    <div class="metric-toggle" role="group" aria-label="Métrica dos rankings">
       <button type="button" class="toggle-btn active" data-metric="valor">Por valor (R$)</button>
       <button type="button" class="toggle-btn" data-metric="quantidade">Por quantidade</button>
     </div>
+  </div>
 
-    <div class="section-block">
-      <h3 class="panel-title">Evolução — últimos 6 meses</h3>
-      <div class="chart-wrap"><canvas id="chartMensal"></canvas></div>
+  <div id="rankBanner" class="mes-banner readonly" hidden></div>
+
+  <!-- erro de carga -->
+  <div id="rankError" class="rk-error" hidden>
+    <p id="rankErroMsg">Não foi possível carregar os dados.</p>
+    <button type="button" class="btn btn-outline btn-sm" id="btnRankRetry">Tentar de novo</button>
+  </div>
+
+  <!-- estado vazio -->
+  <div id="rankEmpty" class="rk-empty" hidden>
+    <div class="rk-empty-bars" aria-hidden="true">
+      <span style="height:14px"></span><span style="height:32px"></span><span style="height:20px"></span>
+      <span style="height:36px"></span><span style="height:12px"></span><span style="height:28px"></span>
+    </div>
+    <p id="rankEmptyMsg">Ainda não há dados suficientes.<br>Registre algumas perdas para ver os rankings.</p>
+  </div>
+
+  <div id="rankContent">
+
+    <!-- resumo -->
+    <div class="rk-summary">
+      <div class="rk-card VENCIDO">
+        <div class="lbl">Vencido</div>
+        <div class="val" id="sumVencidoValor">R$ 0,00</div>
+        <div class="sub" id="sumVencidoQtd">0 itens</div>
+        <div class="delta" id="deltaVencido" hidden></div>
+      </div>
+      <div class="rk-card AVARIADO">
+        <div class="lbl">Avariado</div>
+        <div class="val" id="sumAvariadoValor">R$ 0,00</div>
+        <div class="sub" id="sumAvariadoQtd">0 itens</div>
+        <div class="delta" id="deltaAvariado" hidden></div>
+      </div>
+      <div class="rk-card GERAL">
+        <div class="lbl">Total geral</div>
+        <div class="val" id="sumGeralValor">R$ 0,00</div>
+        <div class="sub" id="sumGeralQtd">0 itens</div>
+        <div class="delta" id="deltaGeral" hidden></div>
+      </div>
     </div>
 
-    <div class="section-block">
-      <h3 class="panel-title">Fornecedores com mais perdas</h3>
+    <!-- contexto + proporção -->
+    <div class="rk-panel rk-resumo-extra">
+      <p class="rk-contexto" id="rankContexto"></p>
+      <div class="rk-prop" id="rankProp">
+        <div class="rk-prop-bar" aria-hidden="true">
+          <span class="seg VENCIDO" id="propV"></span><span class="seg AVARIADO" id="propA"></span>
+        </div>
+        <div class="rk-prop-legend">
+          <span><i class="rk-dot VENCIDO"></i>Vencido <b id="propVTxt">0%</b></span>
+          <span><i class="rk-dot AVARIADO"></i>Avariado <b id="propATxt">0%</b></span>
+          <span class="rk-prop-nota">(em R$)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- evolução -->
+    <div class="rk-panel">
+      <h3 class="rk-title">Evolução — 6 meses</h3>
+      <div class="rk-chart"><canvas id="chartMensal"></canvas></div>
+      <p class="rk-hint">Clique em uma coluna para ver aquele mês.</p>
+    </div>
+
+    <!-- fornecedores -->
+    <div class="rk-panel">
+      <div class="rk-panel-head">
+        <h3 class="rk-title">Fornecedores com mais perdas</h3>
+        <div class="rk-seg" id="rankFornTipo" role="group" aria-label="Filtrar por tipo">
+          <button type="button" class="active" data-tipo="">Todos</button>
+          <button type="button" data-tipo="VENCIDO">Vencido</button>
+          <button type="button" data-tipo="AVARIADO">Avariado</button>
+        </div>
+      </div>
       <div class="rank-list" id="rankFornecedores"></div>
+      <button type="button" class="btn btn-ghost rk-more" id="btnFornMais" hidden>Ver mais</button>
+      <p class="rk-hint">Clique em um fornecedor para abrir o relatório dele.</p>
     </div>
 
-    <div class="rank-columns">
-      <div>
-        <h3 class="panel-title"><span class="dot VENCIDO"></span>Produtos mais vencidos</h3>
+    <!-- produtos -->
+    <div class="rk-columns">
+      <div class="rk-panel">
+        <h3 class="rk-title"><span class="rk-dot VENCIDO"></span>Produtos mais vencidos</h3>
         <div class="rank-list" id="rankProdutosVencido"></div>
       </div>
-      <div>
-        <h3 class="panel-title"><span class="dot AVARIADO"></span>Produtos mais avariados</h3>
+      <div class="rk-panel">
+        <h3 class="rk-title"><span class="rk-dot AVARIADO"></span>Produtos mais avariados</h3>
         <div class="rank-list" id="rankProdutosAvariado"></div>
       </div>
     </div>
+
   </div>
 </section>

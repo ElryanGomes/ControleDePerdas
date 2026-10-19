@@ -20,6 +20,47 @@ const PageRelatorio = (function () {
     return desc;
   }
 
+  /* ---- validade: o banco guarda texto 'DD/MM/AAAA' ou 'ILEGÍVEL' ---- */
+  function validadeParaCampo(v) {
+    if (!v) return '';
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v); // caso exista algum registro antigo em ISO
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : v;
+  }
+
+  // devolve a validade normalizada ('DD/MM/AAAA' ou 'ILEGÍVEL') ou '' se for inválida.
+  // Só confere o formato/data real — não bloqueia datas passadas.
+  function normalizarValidade(txt) {
+    const t = String(txt || '').trim().toUpperCase().replace('ILEGIVEL', 'ILEGÍVEL');
+    if (t === 'ILEGÍVEL') return t;
+    const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(t);
+    if (!m) return '';
+    const d = +m[1], mo = +m[2], y = +m[3];
+    const dt = new Date(y, mo - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== mo - 1 || dt.getDate() !== d) return '';
+    return t;
+  }
+
+  // máscara DD/MM/AAAA enquanto digita (se começar com letra, deixa digitar ILEGÍVEL)
+  function mascaraValidade(e) {
+    const el = e.target;
+    if (/[A-Za-zÀ-ÿ]/.test(el.value)) return;
+    const d = el.value.replace(/\D/g, '').slice(0, 8);
+    let out = d;
+    if (d.length > 4) out = d.slice(0, 2) + '/' + d.slice(2, 4) + '/' + d.slice(4);
+    else if (d.length > 2) out = d.slice(0, 2) + '/' + d.slice(2);
+    el.value = out;
+  }
+
+  /* ---- seletor de mês + faixa de somente leitura ---- */
+  function renderMesControls() {
+    Meses.fillSelect($('relMesSelect'));
+    const b = $('relMesBanner');
+    if (!b) return;
+    const fechado = State.mesSelecionado !== 'TODOS' && Meses.ehFechado(State.mesSelecionado);
+    b.hidden = !fechado;
+    if (fechado) b.textContent = 'Visualizando ' + Meses.label(State.mesSelecionado) + ' — mês fechado, somente leitura.';
+  }
+
   function ordemTipo(t) {
     return t === 'AVARIADO' ? 0 : 1; // avariados primeiro
   }
@@ -74,8 +115,9 @@ const PageRelatorio = (function () {
       if (tipo && p.tipo !== tipo) return false;
 
       // filtro data range
-      if (dataDe && p.data < dataDe) return false;
-      if (dataAte && p.data > dataAte) return false;
+      const dia = p.dataLocal || String(p.data || '').slice(0, 10);
+      if (dataDe && dia < dataDe) return false;
+      if (dataAte && dia > dataAte) return false;
 
       return true;
     });
@@ -168,6 +210,8 @@ const PageRelatorio = (function () {
 
     if (!empty || !emptyFiltered || !content) return;
 
+    renderMesControls();
+
     // Sem nenhum registro no banco
     if (State.perdas.length === 0) {
       empty.style.display = 'block';
@@ -241,7 +285,7 @@ const PageRelatorio = (function () {
         <td class="mono center">${Utils.formatValidade(p.validade)}</td>
         <td class="num center">${Utils.fmtBRL(p.valorUnit)}</td>
         <td class="num center">${Utils.fmtBRL(p.valorTotal)}</td>
-        <td class="center"><button class="kebab-btn" data-id="${p.id}">⋮</button></td>`;
+        <td class="center">${Meses.ehFechado(p.mesRef) ? '' : `<button class="kebab-btn" data-id="${p.id}" aria-label="Ações">⋮</button>`}</td>`;
         tbody.appendChild(tr);
       });
 
@@ -268,6 +312,10 @@ const PageRelatorio = (function () {
   function openEditPerda(id) {
     const p = State.perdas.find(x => x.id === id);
     if (!p) return;
+    if (Meses.ehFechado(p.mesRef)) {
+      Utils.toast('Mês fechado — registro somente para leitura.', 'error');
+      return;
+    }
 
     editingPerdaId = id;
     fillPerdaModalDatalist();
@@ -276,7 +324,7 @@ const PageRelatorio = (function () {
     if ($('perdaModalDesc')) $('perdaModalDesc').value = p.descricao;
     if ($('perdaModalCodigo')) $('perdaModalCodigo').value = p.codigo;
     if ($('perdaModalQtd')) $('perdaModalQtd').value = p.quantidade;
-    if ($('perdaModalValidade')) $('perdaModalValidade').value = p.validade;
+    if ($('perdaModalValidade')) $('perdaModalValidade').value = validadeParaCampo(p.validade);
     if ($('perdaModalValor')) $('perdaModalValor').value = p.valorUnit;
 
     document.querySelectorAll('#perdaModal .toggle-btn').forEach(b => {
@@ -294,14 +342,14 @@ const PageRelatorio = (function () {
     const tipoBtn = document.querySelector('#perdaModal .toggle-btn.active');
     const tipo = tipoBtn ? tipoBtn.dataset.tipo : '';
     const quantidade = parseInt($('perdaModalQtd')?.value || 0);
-    const validade = $('perdaModalValidade')?.value.trim() || '';
+    const validade = normalizarValidade($('perdaModalValidade')?.value);
     const valorUnit = parseFloat($('perdaModalValor')?.value || 0);
 
     if (!fornecedor) { Utils.toast('Informe o fornecedor.', 'error'); return; }
     if (!descricao) { Utils.toast('Informe a descrição.', 'error'); return; }
     if (!tipo) { Utils.toast('Selecione Vencido ou Avariado.', 'error'); return; }
     if (!quantidade || quantidade < 1) { Utils.toast('Informe a quantidade.', 'error'); return; }
-    if (!validade) { Utils.toast('Informe a validade.', 'error'); return; }
+    if (!validade) { Utils.toast('Validade inválida. Use DD/MM/AAAA ou ILEGÍVEL.', 'error'); return; }
     if (isNaN(valorUnit) || valorUnit < 0) { Utils.toast('Informe o valor unitário.', 'error'); return; }
 
     try {
@@ -369,11 +417,14 @@ const PageRelatorio = (function () {
     if (btn) btn.disabled = true;
 
     try {
-      const blob = await Api.exportarXLSX(list);
+      const blob = await Api.exportarXLSX(list, State.mesSelecionado);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'relatorio_perdas_' + new Date().toISOString().slice(0, 10) + '.xlsx';
+      const sufixo = (State.mesSelecionado && State.mesSelecionado !== 'TODOS')
+        ? State.mesSelecionado
+        : new Date().toISOString().slice(0, 10);
+      a.download = 'relatorio_perdas_' + sufixo + '.xlsx';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -389,6 +440,18 @@ const PageRelatorio = (function () {
   /* ========== BINDS (SEM DUPLICAÇÕES) ========== */
 
   function bind() {
+    // Seletor de mês
+    Meses.bindSelect($('relMesSelect'), async () => {
+      State.erro = '';
+      showSkeleton();
+      await State.reloadPerdas();
+      render();
+    });
+
+    // Máscara da validade no modal de edição
+    const validadeInput = $('perdaModalValidade');
+    if (validadeInput) validadeInput.addEventListener('input', mascaraValidade);
+
     // Filtro fornecedor
     const filtroForn = $('filtroForn');
     if (filtroForn) {
@@ -555,8 +618,17 @@ const PageRelatorio = (function () {
 
   bind();
 
+  // chamado pelo Rankings: limpa os filtros e deixa só o fornecedor escolhido
+  function filtrarPorFornecedor(nome) {
+    ['filtroProduto', 'filtroTipo', 'filtroDataDe', 'filtroDataAte'].forEach(id => {
+      if ($(id)) $(id).value = '';
+    });
+    if ($('filtroForn')) $('filtroForn').value = nome || '';
+  }
+
   return {
     refresh: render,
-    showSkeleton: showSkeleton
+    showSkeleton: showSkeleton,
+    filtrarPorFornecedor: filtrarPorFornecedor
   };
 })();
