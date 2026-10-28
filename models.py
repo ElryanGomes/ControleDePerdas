@@ -117,3 +117,98 @@ class Perda(db.Model):
             'dataLocal': para_brasilia(self.criado_em).strftime('%Y-%m-%d') if self.criado_em else None,
             'mesRef': self.mes_ref,
         }
+
+# ============================================================
+# TROCAS e REBAIXAS
+# Ficam em tabelas próprias, apontando para a Perda. Assim o mês
+# fechado continua somente leitura, mas a troca pode ser pedida ou
+# resolvida meses depois. Os valores contam no mês em que a PERDA foi
+# lançada (Perda.mes_ref).
+# ============================================================
+class Troca(db.Model):
+    """Um pedido de troca feito a um fornecedor (pode ter vários produtos)."""
+    __tablename__ = 'trocas'
+
+    id = db.Column(db.Integer, primary_key=True)
+    fornecedor = db.Column(db.String(200), nullable=False, index=True)  # texto, igual à Perda
+    status = db.Column(db.String(12), nullable=False, default='EM_ANALISE')  # EM_ANALISE | TROCADA | RECUSADA
+    observacao = db.Column(db.String(500))
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    resolvido_em = db.Column(db.DateTime)
+
+    itens = db.relationship(
+        'TrocaItem', backref='troca', cascade='all, delete-orphan', lazy=True
+    )
+
+
+class TrocaItem(db.Model):
+    """Quais perdas (e quantas unidades de cada) entram no pedido de troca.
+    A troca é sempre pelo preço de COMPRA (Perda.valor_unit)."""
+    __tablename__ = 'troca_itens'
+
+    id = db.Column(db.Integer, primary_key=True)
+    troca_id = db.Column(db.Integer, db.ForeignKey('trocas.id'), nullable=False, index=True)
+    perda_id = db.Column(db.Integer, db.ForeignKey('perdas.id'), nullable=False, index=True)
+    quantidade = db.Column(db.Integer, nullable=False)
+    valor_unit = db.Column(db.Float, nullable=False)     # preço de compra na hora do pedido
+    valor_total = db.Column(db.Float, nullable=False)
+
+    perda = db.relationship('Perda', lazy='joined')
+
+
+class Rebaixa(db.Model):
+    """Um intervalo em que o produto foi vendido com preço reduzido.
+    O mesmo produto pode ter várias rebaixas (várias linhas)."""
+    __tablename__ = 'rebaixas'
+
+    id = db.Column(db.Integer, primary_key=True)
+    fornecedor = db.Column(db.String(200), nullable=False, index=True)
+    descricao = db.Column(db.String(300), nullable=False)
+    codigo = db.Column(db.String(100))
+    preco_antigo = db.Column(db.Float, nullable=False)    # preço de VENDA original
+    preco_novo = db.Column(db.Float, nullable=False)      # preço de VENDA rebaixado
+    data_inicio = db.Column(db.Date, nullable=False)
+    data_fim = db.Column(db.Date)                         # vazio = ainda em vigor
+    qtd_promocao = db.Column(db.Integer, nullable=False, default=0)  # opcional: quantas unidades entraram na promoção
+    qtd_vendida = db.Column(db.Integer, nullable=False, default=0)   # digitada à mão
+    bonificacao = db.Column(db.String(12), nullable=False, default='PENDENTE')  # PENDENTE | SOLICITADA | RECEBIDA
+    observacao = db.Column(db.String(500))
+    perda_id = db.Column(db.Integer, db.ForeignKey('perdas.id'), nullable=True, index=True)  # vencido que sobrou (opcional)
+    mes_ref = db.Column(db.String(7), index=True)         # 'AAAA-MM' de data_inicio
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+
+    perda = db.relationship('Perda', lazy='joined')
+
+    def to_dict(self):
+        unit = round((self.preco_antigo or 0) - (self.preco_novo or 0), 2)
+        vendida = self.qtd_vendida or 0
+        promocao = self.qtd_promocao or 0
+        perda = None
+        if self.perda:
+            perda = {
+                'id': self.perda.id,
+                'mesRef': self.perda.mes_ref,
+                'quantidade': self.perda.quantidade,
+                'validade': self.perda.validade,
+                'tipo': self.perda.tipo,
+            }
+        return {
+            'id': self.id,
+            'fornecedor': self.fornecedor,
+            'descricao': self.descricao,
+            'codigo': self.codigo or '',
+            'precoAntigo': self.preco_antigo,
+            'precoNovo': self.preco_novo,
+            'perdaUnit': unit,                                  # lucro perdido por unidade
+            'dataInicio': self.data_inicio.isoformat() if self.data_inicio else None,
+            'dataFim': self.data_fim.isoformat() if self.data_fim else None,
+            'qtdPromocao': promocao,
+            'qtdVendida': vendida,
+            'sobra': max(promocao - vendida, 0) if promocao else 0,   # não vendeu -> virou vencido
+            'perdaTotal': round(unit * vendida, 2),             # base da bonificação
+            'bonificacao': self.bonificacao,
+            'observacao': self.observacao or '',
+            'perdaId': self.perda_id,
+            'perda': perda,
+            'mesRef': self.mes_ref,
+        }

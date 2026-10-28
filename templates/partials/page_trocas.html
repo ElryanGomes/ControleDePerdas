@@ -1,0 +1,116 @@
+<!-- ===================== PÁGINA: TROCAS ===================== -->
+<section id="page-trocas" class="page">
+
+  <!-- mês (mesmo seletor do Relatório e dos Rankings) -->
+  <div class="mes-toolbar">
+    <label class="mes-toolbar-label" for="trMesSelect">Mês da perda</label>
+    <div class="mes-select-wrap"><select id="trMesSelect" class="mes-select"></select></div>
+  </div>
+  <div id="trMesBanner" class="mes-banner" hidden></div>
+
+  <!-- erro de carga -->
+  <div id="trError" class="tr-error" hidden>
+    <p id="trErroMsg">Não foi possível carregar os dados.</p>
+    <button type="button" class="btn btn-outline btn-sm" id="btnTrRetry">Tentar de novo</button>
+  </div>
+
+  <!-- ===== cards ===== -->
+  <div class="tr-cards">
+    <div class="tr-card VENCIDO">
+      <div class="lbl">Perda em vencidos</div>
+      <div class="val" id="trCardVencidoVal">R$ 0,00</div>
+      <div class="sub" id="trCardVencidoQtd">0 un</div>
+    </div>
+    <div class="tr-card AVARIADO">
+      <div class="lbl">Perda em avarias</div>
+      <div class="val" id="trCardAvariadoVal">R$ 0,00</div>
+      <div class="sub" id="trCardAvariadoQtd">0 un</div>
+    </div>
+    <div class="tr-card TROCADO">
+      <div class="lbl">Valor em trocas</div>
+      <div class="val" id="trCardTrocadoVal">R$ 0,00</div>
+      <div class="sub" id="trCardTrocadoQtd">0 un trocadas</div>
+    </div>
+    <div class="tr-card LIQUIDA">
+      <div class="lbl">Perda real (sem as trocas)</div>
+      <div class="val" id="trCardLiquidaVal">R$ 0,00</div>
+      <div class="sub" id="trCardLiquidaSub">—</div>
+    </div>
+    <div class="tr-card ANALISE">
+      <div class="lbl">Em análise</div>
+      <div class="val" id="trCardAnaliseVal">R$ 0,00</div>
+      <div class="sub" id="trCardAnaliseQtd">0 un aguardando</div>
+    </div>
+    <div class="tr-card REBAIXA">
+      <div class="lbl">Rebaixa a cobrar</div>
+      <div class="val" id="trCardRebaixaVal">R$ 0,00</div>
+      <div class="sub" id="trCardRebaixaSub">—</div>
+    </div>
+  </div>
+
+  <!-- ===== abas ===== -->
+  <div class="tr-tabs" role="tablist">
+    <button type="button" class="tr-tab active" data-tab="pendentes" role="tab">
+      Pendentes por fornecedor <span class="tr-tab-count" id="trCountPend" hidden></span>
+    </button>
+    <button type="button" class="tr-tab" data-tab="pedidos" role="tab">
+      Pedidos de troca <span class="tr-tab-count" id="trCountPed" hidden></span>
+    </button>
+    <button type="button" class="tr-tab" data-tab="rebaixas" role="tab">
+      Rebaixas de preço <span class="tr-tab-count" id="trCountReb" hidden></span>
+    </button>
+  </div>
+
+  <!-- ===== ABA 1: pendentes ===== -->
+  <div class="tr-panel active" id="trTab-pendentes">
+    <div class="tr-toolbar">
+      <input type="text" id="trFiltroPend" placeholder="Pesquisar fornecedor ou produto" autocomplete="off">
+      <select id="trFiltroPendStatus">
+        <option value="">Todos os produtos</option>
+        <option value="DISP">Com unidades disponíveis</option>
+        <option value="ANALISE">Com troca em análise</option>
+        <option value="TROCADO">Já trocados</option>
+      </select>
+    </div>
+    <div id="trPendentesEmpty" class="tr-empty" hidden></div>
+    <div id="trPendentesList"></div>
+  </div>
+
+  <!-- ===== ABA 2: pedidos ===== -->
+  <div class="tr-panel" id="trTab-pedidos">
+    <div class="tr-toolbar">
+      <input type="text" id="trFiltroPed" placeholder="Pesquisar fornecedor ou produto" autocomplete="off">
+      <select id="trFiltroPedStatus">
+        <option value="">Todos os pedidos</option>
+        <option value="EM_ANALISE">Em andamento (em análise)</option>
+        <option value="TROCADA">Trocados</option>
+        <option value="RECUSADA">Recusados</option>
+      </select>
+    </div>
+    <div id="trPedidosEmpty" class="tr-empty" hidden></div>
+    <div id="trPedidosList"></div>
+  </div>
+
+  <!-- ===== ABA 3: rebaixas ===== -->
+  <div class="tr-panel" id="trTab-rebaixas">
+    <div class="tr-toolbar">
+      <input type="text" id="trFiltroReb" placeholder="Pesquisar fornecedor ou produto" autocomplete="off">
+      <select id="trFiltroRebStatus">
+        <option value="">Todas as bonificações</option>
+        <option value="PENDENTE">Pendente</option>
+        <option value="SOLICITADA">Solicitada</option>
+        <option value="RECEBIDA">Recebida</option>
+      </select>
+      <button type="button" class="btn btn-primary" id="btnNovaRebaixa">+ Nova rebaixa</button>
+    </div>
+    <p class="tr-nota">
+      A rebaixa conta pelo <b>mês em que começou</b>. A perda de lucro (preço antigo − preço novo) × unidades vendidas
+      é o valor que você cobra do fornecedor como bonificação. O que sobrar e vencer é trocado pelo
+      <b>preço de compra</b>, na aba de pendentes.
+    </p>
+    <div id="trRebResumo"></div>
+    <div id="trRebEmpty" class="tr-empty" hidden></div>
+    <div id="trRebList"></div>
+  </div>
+
+</section>

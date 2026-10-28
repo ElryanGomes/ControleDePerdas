@@ -21,7 +21,8 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
-from models import db, Fornecedor, Produto, Perda, Mes, mes_ref_de, mes_seguinte
+from models import db, Fornecedor, Produto, Perda, Mes, Troca, Rebaixa, mes_ref_de, mes_seguinte
+from trocas import bp_trocas, perda_tem_troca_ativa, remover_vinculos_da_perda
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -36,6 +37,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+app.register_blueprint(bp_trocas)   # Trocas e Rebaixas (trocas.py)
 
 REGEX_MES = re.compile(r'^\d{4}-(0[1-9]|1[0-2])$')
 
@@ -239,6 +241,9 @@ def atualizar_fornecedor(nome):
         if fechados:
             perdas = perdas.filter(~Perda.mes_ref.in_(fechados))
     atualizadas = perdas.update({Perda.fornecedor: novo_nome}, synchronize_session=False)
+    # pedidos de troca e rebaixas também guardam o nome como texto
+    Troca.query.filter(Troca.fornecedor == nome_antigo).update({Troca.fornecedor: novo_nome}, synchronize_session=False)
+    Rebaixa.query.filter(Rebaixa.fornecedor == nome_antigo).update({Rebaixa.fornecedor: novo_nome}, synchronize_session=False)
 
     try:
         db.session.commit()
@@ -427,6 +432,14 @@ def atualizar_perda(perda_id):
     if not fornecedor or not descricao or tipo not in ('VENCIDO', 'AVARIADO') or quantidade < 1 or not validade:
         return jsonify({'erro': 'Preencha todos os campos obrigatórios.'}), 400
 
+    # perda em troca "em análise" ou "trocada": só dá para corrigir descrição, código, motivo e validade
+    if perda_tem_troca_ativa(perda.id) and (
+            fornecedor != perda.fornecedor or quantidade != perda.quantidade
+            or round(valor_unit, 2) != round(perda.valor_unit, 2)):
+        return jsonify({'erro': 'Este registro está em um pedido de troca (em análise ou trocado). '
+                                'Só dá para corrigir descrição, código, motivo e validade. Para mudar fornecedor, '
+                                'quantidade ou valor, volte/exclua o pedido na página Trocas antes.'}), 409
+
     get_or_create_fornecedor(fornecedor)
 
     perda.fornecedor = fornecedor
@@ -612,6 +625,10 @@ def excluir_perda(perda_id):
     bloqueio = bloquear_se_fechado(perda)
     if bloqueio:
         return bloqueio
+    if perda_tem_troca_ativa(perda.id):
+        return jsonify({'erro': 'Este registro está em um pedido de troca (em análise ou trocado). '
+                                'Exclua ou reabra o pedido na página Trocas antes de apagar.'}), 409
+    remover_vinculos_da_perda(perda.id)   # tira itens de pedidos recusados e desvincula rebaixas
     db.session.delete(perda)
     db.session.commit()
     return jsonify({'ok': True})

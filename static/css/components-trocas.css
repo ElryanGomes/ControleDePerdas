@@ -1,0 +1,234 @@
+/* ============================================================
+   COMPONENTES — Página: TROCAS
+   Reaproveita .report-card, .data-table, .badge, .panel e os
+   modais do components-base.css / components-relatorio.css.
+   Só usa variáveis (var(--x)), então o tema escuro funciona sozinho.
+   ============================================================ */
+
+/* ---------- cards do topo ---------- */
+.tr-cards{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:16px;
+  margin-bottom:24px;
+}
+.tr-card{
+  background:var(--surface);
+  border:1.5px solid var(--border-strong);
+  border-left-width:4px;
+  border-radius:var(--radius);
+  padding:16px 18px;
+  box-shadow:var(--shadow-sm);
+  min-width:0;
+}
+.tr-card .lbl{
+  font-family:var(--font-display);
+  font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--text-muted);
+}
+.tr-card .val{
+  font-family:var(--font-mono);
+  font-size:22px; font-weight:600;
+  margin-top:6px;
+  color:var(--text);
+  overflow-wrap:anywhere;
+}
+.tr-card .sub{ font-size:12.5px; color:var(--text-muted); margin-top:4px; }
+.tr-card.VENCIDO{ border-left-color:var(--vencido); }
+.tr-card.AVARIADO{ border-left-color:var(--avariado); }
+.tr-card.TROCADO{ border-left-color:var(--success); }
+.tr-card.TROCADO .val{ color:var(--success); }
+.tr-card.LIQUIDA{ border-left-color:var(--accent); }
+.tr-card.LIQUIDA .val{ color:var(--accent); }
+.tr-card.ANALISE{ border-left-color:var(--steel); }
+.tr-card.REBAIXA{ border-left-color:var(--avariado); }
+
+/* ---------- abas ---------- */
+.tr-tabs{
+  display:flex; gap:4px;
+  border-bottom:1.5px solid var(--border);
+  margin-bottom:18px;
+  overflow-x:auto;
+}
+.tr-tab{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 18px;
+  background:transparent; border:none;
+  border-bottom:3px solid transparent;
+  margin-bottom:-1.5px;
+  color:var(--text-muted);
+  font-family:var(--font-body); font-size:13.5px; font-weight:600;
+  white-space:nowrap; cursor:pointer;
+  transition:color .15s ease, border-color .15s ease;
+}
+.tr-tab:hover{ color:var(--text); }
+.tr-tab.active{ color:var(--accent); border-bottom-color:var(--accent); }
+.tr-tab-count{
+  min-width:20px; padding:1px 7px;
+  border-radius:999px;
+  background:var(--accent-soft); color:var(--accent);
+  font-family:var(--font-mono); font-size:11px; font-weight:700; text-align:center;
+}
+.tr-tab-count[hidden]{ display:none; }
+
+.tr-panel{ display:none; }
+.tr-panel.active{ display:block; }
+
+/* ---------- barra de filtros da aba ---------- */
+.tr-toolbar{
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  margin-bottom:16px;
+}
+.tr-toolbar input[type=text]{ flex:1; min-width:200px; }
+.tr-toolbar select{ width:auto; min-width:220px; }
+.tr-nota{
+  font-size:12.5px; line-height:1.55; color:var(--text-muted);
+  margin:0 0 16px;
+}
+
+/* ---------- vazio / erro ---------- */
+.tr-empty{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:44px 20px;
+  background:var(--surface-alt);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  text-align:center; color:var(--text-muted); font-size:13px;
+}
+.tr-empty[hidden]{ display:none; }
+.tr-empty strong{ color:var(--text); font-size:15px; }
+.tr-error{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  padding:12px 16px; margin-bottom:16px;
+  border-left:3px solid var(--danger);
+  border-radius:var(--radius-sm);
+  background:var(--danger-soft); color:var(--text); font-size:13px;
+}
+.tr-error[hidden]{ display:none; }
+
+/* ---------- grupo por fornecedor (aba pendentes) ---------- */
+.tr-group-head{ cursor:pointer; gap:12px; user-select:none; }
+.tr-group-head h3{ flex:0 1 auto; }
+.tr-group-head .subtotal{ margin-left:auto; }
+.tr-chevron{
+  display:inline-block; flex:0 0 auto;
+  font-size:12px; color:var(--text-muted);
+  transition:transform .15s ease;
+}
+.tr-group.open .tr-chevron{ transform:rotate(90deg); }
+.tr-group:not(.open) .tr-group-body{ display:none; }
+.tr-group:not(.open) .tr-group-head{ border-bottom:none; }
+
+.tr-stats{ display:flex; gap:6px; flex-wrap:wrap; flex:1; min-width:0; }
+.tr-stat{
+  padding:3px 9px; border-radius:999px;
+  font-size:11px; font-weight:600; white-space:nowrap;
+  border:1px solid var(--border-strong); color:var(--text-muted); background:var(--surface);
+}
+.tr-stat b{ font-family:var(--font-mono); color:var(--text); }
+.tr-stat.disp{ border-color:var(--steel); color:var(--steel); }
+.tr-stat.analise{ border-color:var(--avariado); color:var(--avariado); }
+.tr-stat.trocado{ border-color:var(--success); color:var(--success); }
+
+.tr-group-foot{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding:12px 16px;
+  border-top:1px solid var(--border);
+  background:var(--surface-alt);
+}
+.tr-foot-info{ flex:1; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); }
+
+/* ---------- tabelas ---------- */
+.tr-scroll{ overflow-x:auto; border-radius:0; border-left:none; border-right:none; box-shadow:none; }
+.tr-table{ min-width:760px; }
+.tr-table td.tr-chk{ width:44px; max-width:44px; padding-left:12px; padding-right:4px; }
+.tr-table td.tr-chk input[type=checkbox]{ width:18px; height:18px; cursor:pointer; }
+.tr-table td{ height:auto; min-height:48px; }
+.tr-table td:first-child{ max-width:none; }
+.tr-table tfoot td{
+  padding:12px 16px; font-weight:700;
+  background:var(--surface-alt); border-top:1px solid var(--border);
+  font-family:var(--font-mono);
+}
+.tr-table tfoot td:first-child{ font-family:var(--font-body); }
+.tr-table td.num, .tr-table th.num{ white-space:nowrap; }
+.tr-sub{ margin-top:2px; font-size:11px; color:var(--text-muted); font-weight:400; }
+.tr-sub.mono, .tr-sub .mono{ font-family:var(--font-mono); }
+.tr-disp{ font-weight:700 !important; color:var(--steel); }
+.tr-cobrar{ color:var(--avariado); font-weight:700 !important; }
+.tr-mini{ min-height:34px; padding:6px 12px; white-space:nowrap; }
+.tr-del{ color:var(--danger) !important; min-height:34px; }
+.tr-row-acoes{ white-space:nowrap; }
+.tr-row-acoes .btn{ margin:2px; }
+
+/* ---------- badges de status ---------- */
+.tr-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:4px 10px; border-radius:12px;
+  font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+  white-space:nowrap; border:1px solid var(--border-strong);
+  background:var(--surface-alt); color:var(--text-muted);
+}
+.tr-badge.DISPONIVEL{ background:var(--surface-alt); color:var(--text-muted); }
+.tr-badge.PARCIAL{ background:var(--steel-soft); color:var(--steel); border-color:var(--steel); }
+.tr-badge.EM_ANALISE{ background:var(--avariado-soft); color:var(--avariado); border-color:var(--avariado); }
+.tr-badge.TROCADO, .tr-badge.TROCADA{ background:var(--success-soft); color:var(--success); border-color:var(--success); }
+.tr-badge.RECUSADA{ background:var(--danger-soft); color:var(--danger); border-color:var(--danger); }
+
+/* ---------- pedidos ---------- */
+.tr-pedido .report-card-header{ gap:12px; }
+.tr-pedido .report-card-header h3{ flex:1; }
+.tr-id{ font-family:var(--font-mono); font-weight:500; color:var(--text-muted); }
+.tr-pedido-meta{
+  padding:10px 16px; font-size:12.5px; line-height:1.55;
+  color:var(--text-muted); border-bottom:1px solid var(--border);
+}
+.tr-aviso{ color:var(--avariado); }
+.tr-acoes{
+  display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+  padding:12px 16px; border-top:1px solid var(--border); background:var(--surface-alt);
+}
+
+/* ---------- bonificação (select na tabela) ---------- */
+.tr-bonif{
+  width:auto !important; min-width:120px; min-height:34px !important;
+  padding:5px 10px !important; font-size:12px !important; font-weight:700;
+  border-radius:12px !important; cursor:pointer;
+}
+.tr-bonif.PENDENTE{ border-color:var(--avariado); color:var(--avariado); background-color:var(--avariado-soft); }
+.tr-bonif.SOLICITADA{ border-color:var(--steel); color:var(--steel); background-color:var(--steel-soft); }
+.tr-bonif.RECEBIDA{ border-color:var(--success); color:var(--success); background-color:var(--success-soft); }
+
+/* ---------- modais ---------- */
+.tr-modal{ max-width:520px; }
+.tr-modal-itens{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+.tr-mi{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px;
+  border:1.5px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface-alt);
+}
+.tr-mi-info{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; font-size:13px; }
+.tr-mi-info b{ overflow-wrap:anywhere; }
+.tr-mi-info span{ font-size:11.5px; color:var(--text-muted); }
+.tr-mi input[type=number]{ width:84px; flex:0 0 84px; text-align:center; font-family:var(--font-mono); }
+.tr-preview{
+  padding:10px 12px; margin-bottom:6px;
+  border-left:3px solid var(--steel); border-radius:var(--radius-sm);
+  background:var(--steel-soft); color:var(--text); font-size:12.5px; line-height:1.5;
+}
+
+/* ---------- responsivo ---------- */
+@media (max-width: 900px){
+  .tr-cards{ grid-template-columns:repeat(2, 1fr); gap:12px; }
+}
+@media (max-width: 600px){
+  .tr-cards{ grid-template-columns:1fr; }
+  .tr-card .val{ font-size:20px; }
+  .tr-toolbar select, .tr-toolbar .btn{ width:100%; }
+  .tr-group-head{ flex-wrap:wrap; }
+  .tr-stats{ order:3; flex-basis:100%; }
+  .tr-group-foot .btn{ flex:1; }
+  .tr-acoes .btn{ flex:1; }
+  .tr-modal .field-row{ flex-direction:column; gap:0; }
+}

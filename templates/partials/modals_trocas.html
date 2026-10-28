@@ -1,0 +1,104 @@
+<!-- ============================================================
+     MODAIS DA PÁGINA TROCAS (incluir dentro do bloco "modals" do index.html)
+     ============================================================ -->
+
+<!-- ===================== MODAL: PEDIR TROCA ===================== -->
+<div id="trocaModal" class="modal-overlay">
+  <div class="modal-box tr-modal">
+    <h3>Pedir troca</h3>
+
+    <div class="forn-line"><span>Fornecedor</span><b id="trocaModalForn"></b></div>
+
+    <div id="trocaModalItens" class="tr-modal-itens"></div>
+
+    <div class="total-display">
+      <span class="lbl">Valor da troca (preço de compra)</span>
+      <span class="val" id="trocaModalTotal">R$ 0,00</span>
+    </div>
+
+    <div class="field mt-14">
+      <label class="field-label" for="trocaModalObs">Observação (opcional)</label>
+      <input type="text" id="trocaModalObs" maxlength="500" placeholder="Ex: nº do pedido, nome do vendedor" autocomplete="off">
+      <span class="field-hint">O produto fica <b>em análise</b> até você marcar o resultado do pedido.</span>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="btnCancelTroca">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnSaveTroca">Confirmar pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MODAL: REBAIXA (nova / editar) ===================== -->
+<div id="rebaixaModal" class="modal-overlay">
+  <div class="modal-box tr-modal">
+    <h3 id="rbTitulo">Nova rebaixa</h3>
+
+    <div class="field">
+      <label class="field-label" for="rbForn">Fornecedor</label>
+      <select id="rbForn"></select>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="rbDesc">Produto</label>
+      <input type="text" id="rbDesc" list="rbProdutosDatalist" placeholder="Digite ou escolha do catálogo" autocomplete="off">
+      <datalist id="rbProdutosDatalist"></datalist>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="rbCodigo">Código do produto</label>
+      <input type="text" id="rbCodigo" class="mono-input" autocomplete="off">
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="rbPrecoAntigo">Preço de venda antigo (R$)</label>
+        <input type="text" id="rbPrecoAntigo" inputmode="decimal" placeholder="5,00" autocomplete="off">
+      </div>
+      <div class="field">
+        <label class="field-label" for="rbPrecoNovo">Preço rebaixado (R$)</label>
+        <input type="text" id="rbPrecoNovo" inputmode="decimal" placeholder="4,00" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="rbInicio">Início da rebaixa</label>
+        <input type="date" id="rbInicio">
+      </div>
+      <div class="field">
+        <label class="field-label" for="rbFim">Fim (vazio = em vigor)</label>
+        <input type="date" id="rbFim">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="rbQtdPromo">Unidades na promoção</label>
+        <input type="number" id="rbQtdPromo" min="0" step="1" placeholder="Opcional">
+      </div>
+      <div class="field">
+        <label class="field-label" for="rbQtdVendida">Unidades vendidas</label>
+        <input type="number" id="rbQtdVendida" min="0" step="1" placeholder="0">
+      </div>
+    </div>
+
+    <div class="tr-preview" id="rbPreview">Preencha os preços e a quantidade vendida para ver a perda de lucro.</div>
+
+    <div class="field mt-14">
+      <label class="field-label" for="rbPerda">Vencido que sobrou (opcional)</label>
+      <select id="rbPerda"></select>
+      <span class="field-hint">Se parte não vendeu e venceu, ligue ao registro de vencido. Ele será trocado pelo preço de compra.</span>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="rbObs">Observação (opcional)</label>
+      <input type="text" id="rbObs" maxlength="500" autocomplete="off">
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="btnCancelRebaixa">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="btnSaveRebaixa">Salvar</button>
+    </div>
+  </div>
+</div>

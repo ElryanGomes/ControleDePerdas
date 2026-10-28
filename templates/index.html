@@ -5,11 +5,13 @@
   {% include "partials/page_relatorio.html" %}
   {% include "partials/page_rankings.html" %}
   {% include "partials/page_graficos.html" %}
+  {% include "partials/page_trocas.html" %}
   {% include "partials/page_catalogo.html" %}
 {% endblock %}
 
 {% block modals %}
   {% include "partials/modals.html" %}
+  {% include "partials/modals_trocas.html" %}
 {% endblock %}
 
 {% block scripts %}
@@ -24,6 +26,7 @@
 <script src="{{ url_for('static', filename='js/page-relatorio.js') }}"></script>
 <script src="{{ url_for('static', filename='js/page-rankings.js') }}"></script>
 <script src="{{ url_for('static', filename='js/page-graficos.js') }}"></script>
+<script src="{{ url_for('static', filename='js/page-trocas.js') }}"></script>
 <script src="{{ url_for('static', filename='js/page-catalogo.js') }}"></script>
 <script src="{{ url_for('static', filename='js/mobile.js') }}"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
