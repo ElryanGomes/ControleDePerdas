@@ -187,26 +187,30 @@ const PageTrocas = (function () {
       rotulo + ' <b>' + qtd + '</b></span>';
   }
 
+  const ROT_PONTO = {
+    DISPONIVEL: 'Disponível', PARCIAL: 'Parcial (parte já pedida)',
+    EM_ANALISE: 'Em análise', TROCADO: 'Trocado'
+  };
+  function ponto(status) {
+    return '<span class="tr-dot ' + status + '" title="' + (ROT_PONTO[status] || status) + '" aria-label="' +
+      (ROT_PONTO[status] || status) + '"></span>';
+  }
+
   function htmlLinhaPend(i) {
     const podePedir = i.disponivel > 0;
     return '<tr>' +
       '<td class="center tr-chk">' + (podePedir
         ? '<input type="checkbox" data-sel="' + i.perdaId + '"' + (S.sel.has(i.perdaId) ? ' checked' : '') + ' aria-label="Selecionar">'
         : '') + '</td>' +
-      '<td title="' + esc(i.descricao) + '">' + esc(truncar(i.descricao, 50)) +
-        '<div class="tr-sub mono">' + esc(i.codigo || '—') + ' · val. ' + esc(Utils.formatValidade(i.validade)) +
-        ' · ' + esc(Meses.label(i.mesRef)) + '</div></td>' +
-      '<td class="center"><span class="badge ' + i.tipo + '">' + i.tipo + '</span></td>' +
+      '<td class="tr-nome" title="' + esc(i.descricao) + '">' + esc(i.descricao) +
+        '<div class="tr-tipo ' + i.tipo + '">' + (i.tipo === 'AVARIADO' ? 'avariado' : 'vencido') + '</div></td>' +
       '<td class="num center">' + i.quantidade + '</td>' +
       '<td class="num center tr-disp">' + i.disponivel + '</td>' +
       '<td class="num center">' + (i.emAnalise || '—') + '</td>' +
       '<td class="num center">' + (i.trocado || '—') + '</td>' +
       '<td class="num center">' + brl(i.valorUnit) + '</td>' +
       '<td class="num center">' + brl(i.valorTotal) + '</td>' +
-      '<td class="center">' + badge(i.status) + '</td>' +
-      '<td class="center">' + (podePedir
-        ? '<button type="button" class="btn btn-outline btn-sm tr-mini" data-act="pedir" data-id="' + i.perdaId + '">Pedir troca</button>'
-        : '') + '</td>' +
+      '<td class="center">' + ponto(i.status) + '</td>' +
       '</tr>';
   }
 
@@ -227,11 +231,11 @@ const PageTrocas = (function () {
       '<div class="tr-group-body">' +
         '<div class="table-wrap tr-scroll"><table class="data-table tr-table">' +
           '<thead><tr>' +
-            '<th class="center"></th><th>Produto</th><th class="center">Motivo</th>' +
+            '<th class="center"></th><th>Produto</th>' +
             '<th class="num center">Qtd.</th><th class="num center">Disp.</th>' +
             '<th class="num center">Em análise</th><th class="num center">Trocado</th>' +
             '<th class="num center">Val. unit.</th><th class="num center">Val. total</th>' +
-            '<th class="center">Status</th><th class="center"></th>' +
+            '<th class="center">Status</th>' +
           '</tr></thead>' +
           '<tbody>' + g.itens.map(htmlLinhaPend).join('') + '</tbody>' +
         '</table></div>' +
@@ -290,7 +294,6 @@ const PageTrocas = (function () {
 
     if (acao) {
       const act = acao.dataset.act;
-      if (act === 'pedir') abrirModalTroca(forn, [parseInt(acao.dataset.id, 10)]);
       if (act === 'pedir-sel') abrirModalTroca(forn, idsSelecionados(forn));
       if (act === 'sel-todos') {
         const boxes = card.querySelectorAll('input[data-sel]');
